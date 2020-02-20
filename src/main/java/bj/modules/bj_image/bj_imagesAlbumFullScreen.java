@@ -384,7 +384,7 @@ public class bj_imagesAlbumFullScreen extends Fragment {
                         public void OnResult(int MyResult, String ResultDescriptiopn, @Nullable File DestinationFile) {
                             //
                             // Toast.makeText(getContext(), DestinationFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
-                            if (MyResult== bj_file.GFileDialogsResults.Completed) {
+                            if (MyResult== bj_file_classes.GFileDialogsResults.Completed) {
                                 bj_image.UpdateGallery(context, DestinationFile);
                                 Toast.makeText(getContext(), "Image Saved Succecfully", Toast.LENGTH_SHORT).show();
                             }else {
@@ -444,7 +444,7 @@ public class bj_imagesAlbumFullScreen extends Fragment {
                                     @Override
                                     public void OnResult(int MyResult, String ResultDescriptiopn, @Nullable File DestinationFile) {
                                         //Toast.makeText(getContext(), DestinationFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
-                                        if (MyResult== bj_file.GFileDialogsResults.Completed) {
+                                        if (MyResult== bj_file_classes.GFileDialogsResults.Completed) {
 
                                             Toast.makeText(getContext(), "Image Saved Succecfully", Toast.LENGTH_SHORT).show();
                                         }else {

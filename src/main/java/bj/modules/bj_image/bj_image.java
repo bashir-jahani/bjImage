@@ -54,8 +54,6 @@ import java.util.List;
 
 import bj.modules.bj_file;
 import bj.modules.bj_file_classes.*;
-import bj.modules.bj_file_objcets.file_object;
-import bj.modules.bj_image_classes;
 import bj.modules.bj_messageBox.*;
 import bj.modules.bj_image_classes.*;
 import bj.modules.bj_permission;
@@ -553,7 +551,7 @@ public class bj_image {
     public  static Boolean ImageSave(Context context, String ImagePath, String ImageBase64String)   {
         final boolean[] _HavePermission = {false};
         //Log.d("GGN","ImageSave:" + "\n" + ImagePath + "\n" + ImageBase64String);
-        CheckPermision(context, Manifest.permission.READ_EXTERNAL_STORAGE, R.string.permission_save_images, new bj_permission.GetPermissionListener() {
+        CheckPermision(context, Manifest.permission.READ_EXTERNAL_STORAGE, R.string.permission_save_images, new bj_permission.OnGetPermissionListener() {
             @Override
             public void onPermissionProcesComplated(String PermissionNeeded, Boolean HavePermission) {
                 _HavePermission[0] =HavePermission;
@@ -595,7 +593,7 @@ public class bj_image {
     @NonNull
     public  static Boolean ImageSave(Context context,String ImagePath, InputStream inputStream)   {
         final boolean[] _HavePermission = {false};
-        CheckPermision(context, Manifest.permission.READ_EXTERNAL_STORAGE, R.string.permission_save_images, new bj_permission.GetPermissionListener() {
+        CheckPermision(context, Manifest.permission.READ_EXTERNAL_STORAGE, R.string.permission_save_images, new bj_permission.OnGetPermissionListener() {
             @Override
             public void onPermissionProcesComplated(String PermissionNeeded, Boolean HavePermission) {
                 _HavePermission[0] =HavePermission;
@@ -637,7 +635,7 @@ public class bj_image {
     public static Bitmap Load_PictureTo_ImageView(Context context,String ImageFilePath,   ImageView ImageViewForShow, Integer CournerRadius, @ColorRes int BorderColor, int BorderSize, @ColorRes int ShadowColor, Integer ShadowSize, Boolean CenterShadow, Boolean InversShadow, @ColorRes int SecondBorderColor, int SecondBorderSiz, int ResizeImageWidth, @DrawableRes int  errorImageDrawableResource,  @DrawableRes int  placeholderImageDrawableResource){
         final boolean[] _HavePermission = {false};
         Log.e("GGN","Load_PictureTo_ImageView " );
-        CheckPermision(context, Manifest.permission.READ_EXTERNAL_STORAGE, R.string.permission_save_images, new bj_permission.GetPermissionListener() {
+        CheckPermision(context, Manifest.permission.READ_EXTERNAL_STORAGE, R.string.permission_save_images, new bj_permission.OnGetPermissionListener() {
             @Override
             public void onPermissionProcesComplated(String PermissionNeeded, Boolean HavePermission) {
                 _HavePermission[0] =HavePermission;
