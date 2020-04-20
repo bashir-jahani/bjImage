@@ -22,7 +22,6 @@ public class bj_image_classes {
 		public static final int  REQUEST_CODE_ImageFromEditImage=9;
 
 	}
-
 	public static void FragmentpopBackStackTillEntry(@Nullable FragmentManager fragmentManager, int entryIndex) {
 
 		if (fragmentManager == null) {
@@ -41,8 +40,7 @@ public class bj_image_classes {
 
 
 	}
-
-	public static void FragmentOpen(FragmentManager fragmentManager, Fragment fragment, Boolean InBack, Integer  SendContainerViewID){
+	public static void fragmentOpen(FragmentManager fragmentManager, Fragment fragment, Boolean InBack, Integer  SendContainerViewID){
 
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		if (InBack) {
@@ -68,7 +66,6 @@ public class bj_image_classes {
 			//android.R.id.content
 		}
 	}
-
 	public static void establishLayout(FragmentManager fragmentManager,String tagFragment){
 
 		Fragment fragmentoActual = fragmentManager.findFragmentByTag(tagFragment);
@@ -76,10 +73,6 @@ public class bj_image_classes {
 			pushFragments(fragmentManager, tagFragment, fragmentoActual);
 		}
 	}
-
-
-
-
 	public static void pushFragments(FragmentManager fragmentManager,String tag, Fragment fragment){
 
 		FragmentTransaction ft = fragmentManager.beginTransaction();

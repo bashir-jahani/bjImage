@@ -14,6 +14,7 @@ import android.text.Editable;
 
 import android.text.TextWatcher;
 
+import android.util.Log;
 import android.util.TypedValue;
 
 import android.view.View;
@@ -40,14 +41,14 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import bj.modules.bj_image.R;
-import bj.modules.bj_image_objects.imagesView_TouchImageView;
 
-import static bj.modules.bj_pth_files.*;
+import static bj.modules.bj_path_files.*;
 
 
 @SuppressWarnings("ALL")
 public class imagesEdit extends AppCompatActivity {
-
+    private String TAG="imagesEdit";
+    boolean minimizeImage=false;
     Uri ImageUri;
     String PathForExportImage;
     ImageView FinalIMGV,BTNBack,BTNCrop,BTNFrame,BTNCaption,BTNOK,BTNSettingCancel,BTNFontColor;
@@ -68,19 +69,22 @@ public class imagesEdit extends AppCompatActivity {
             R.drawable.frame4,R.drawable.frame5,
             R.drawable.frame6,
     };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.g_images_edit);
+        setContentView(R.layout.bj_images_edit);
         //Set Objects
         ImageUri= (Uri) this.getIntent().getData();
+        if (this.getIntent().getExtras()!=null)
+            minimizeImage=this.getIntent().getExtras().getBoolean("minimizeImage",false);
 
-
-
+        PathForExportImage= Paths_Temp(imagesEdit.this)+File.separator+getRandomName()+".jpg";
         if (getIntent().getExtras()!=null)
-            PathForExportImage=getIntent().getExtras().getString("PathForExportImage", Paths_Temp()+File.separator+"image.jpg");
+            PathForExportImage=getIntent().getExtras().getString("PathForExportImage", PathForExportImage);
         else
-            PathForExportImage= Paths_Temp()+File.separator+"image.jpg";
+            PathForExportImage= Paths_Temp(imagesEdit.this)+File.separator+getRandomName()+".jpg";
 
 
         MyIMGV=(imagesView_TouchImageView) findViewById(R.id.GIE_IMG_MyImage);
@@ -117,15 +121,17 @@ public class imagesEdit extends AppCompatActivity {
         InputStream in = null;
         try {
             in = this.getContentResolver().openInputStream(ImageUri);
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException|NullPointerException e) {
             e.printStackTrace();
+            Log.e(TAG, "onCreate:  in = this.getContentResolver().openInputStream(ImageUri): "+e.getMessage() );
             Toast.makeText(this, "Error: "+e.getMessage() +".\n"+"Retry.", Toast.LENGTH_LONG).show();
             finish();
         }
         MyBitMap = BitmapFactory.decodeStream(in);
         try {
             in.close();
-        } catch (IOException e) {
+        } catch (IOException|NullPointerException e) {
+            Log.e(TAG, "onCreate: in.close(): "+e.getMessage() );
             Toast.makeText(this, "Error: Cant Generate Bitmap" +".\n"+"Retry.", Toast.LENGTH_LONG).show();
             finish();
             return;
@@ -249,7 +255,20 @@ public class imagesEdit extends AppCompatActivity {
         SettingHide();
         ResetImage();
     }
+    public static String getRandomName() {
+        String R;
 
+        R =Long.toString((long) Math.floor((1 + Math.random() * 0x10000)),16);
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        R =R +Long.toString((long) Math.floor((1 + Math.random() * 0x10000)),16);
+        return R;
+
+    }
     private void ResetImage() {
         MyIMGV.SetZoomScale(1);
         ClearFrame();
@@ -275,7 +294,11 @@ public class imagesEdit extends AppCompatActivity {
     private void SettingHide(){
         LL_Settings.setVisibility(View.GONE);
         CropCaption.setVisibility(View.GONE);
-        MyIMGV.setForeground(null);
+        try{
+            MyIMGV.setForeground(null);
+        }catch (NoSuchMethodError e){
+
+        }
         LL_CaptionTXB.setVisibility(View.GONE);
         framesView.setVisibility(View.GONE);
         seekbar.setOnSeekBarChangeListener(null);
@@ -405,7 +428,7 @@ public class imagesEdit extends AppCompatActivity {
     public void CaptureImage(){
         SettingHide();
 
-        if (MyCaption.getVisibility()!=View.VISIBLE & SizeOFfFrame==0 & MyIMGV.GetZoomScale()==1) {
+        if (MyCaption.getVisibility()!=View.VISIBLE && SizeOFfFrame==0 && MyIMGV.GetZoomScale()==1 && !minimizeImage ) {
             //Orginal Image
             //Toast.makeText(this, "Orginal Image", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent();
@@ -427,6 +450,9 @@ public class imagesEdit extends AppCompatActivity {
         v.setDrawingCacheEnabled(false);
 
         File filePath = new File(PathForExportImage);
+        if (filePath.exists()){
+            filePath.delete();
+        }
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(filePath);

@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:backgroundTint="@color/black_overlay"
+    android:orientation="vertical"
+    tools:context="bj.modules.bj_image_objects.imagesEdit">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+            <RelativeLayout
+                android:id="@+id/GIE_RL_CropView"
+                android:layout_width="300dp"
+                android:layout_height="340dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:background="@android:color/transparent">
+
+            <ImageView
+                android:id="@+id/GIE_IMG_FinalImage"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+
+                android:layout_alignParentTop="true" />
+
+            <bj.modules.bj_image_objects.imagesView_TouchImageView
+                android:id="@+id/GIE_IMG_MyImage"
+                android:layout_width="300dp"
+                android:layout_height="340dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:foreground="@drawable/guides_4_4"
+                android:scaleType="centerCrop"
+
+                android:src="@drawable/demo"
+                app:maxScale="10" />
+
+            <TextView
+                android:id="@+id/GIE_TXV_CaptionTxt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:padding="5dp"
+                android:textAlignment="center"
+                android:textColor="#222"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:gravity="bottom"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/GIE_TXV_Crop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/crop_caption" />
+            <!-- TOOLBAR VIEW -->
+            <LinearLayout
+                android:id="@+id/GIE_LL_Settings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/GIE_LL_SeekBar_CaptionSpaceSize"
+                    android:layout_width="fill_parent"
+                    android:layout_height="50dp"
+                    android:layout_centerHorizontal="true"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:id="@+id/GIE_TXV_SeekBar_CaptionSpaceSize"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentTop="true"
+                        android:gravity="center_vertical"
+
+                        android:paddingLeft="5dp"
+                        android:text="Space Size: " />
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layoutDirection="rtl"
+                        android:paddingRight="15dp">
+
+                        <ImageView
+                            android:id="@+id/GIE_IMG_BTN_Setting_Cancel1"
+
+                            android:layout_width="35dp"
+                            android:layout_height="match_parent"
+                            android:layout_margin="3dp"
+                            android:clickable="true"
+                            android:src="@drawable/icon_download_cancel"
+                            android:visibility="invisible" />
+
+                       <SeekBar
+                           android:id="@+id/GIE_SeekBarCaptionSpaceSize"
+                           style="@android:style/Widget.DeviceDefault.Light.SeekBar"
+                           android:layout_width="match_parent"
+                           android:layout_height="match_parent"
+                           android:layout_alignParentTop="true"
+                           android:layout_centerVertical="true"
+                           android:layout_marginLeft="5dp"
+                           android:layout_marginRight="5dp"
+                           android:layout_marginTop="10dp"
+                           android:layout_toEndOf="@+id/GIE_TXV_SeekBar_Caption"
+                           android:indeterminate="false"
+                           android:layoutDirection="ltr"
+                           android:max="300"
+                           android:progress="16"/>
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/GIE_LL_SeekBar"
+                    android:layout_width="fill_parent"
+                    android:layout_height="50dp"
+                    android:layout_centerHorizontal="true"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:id="@+id/GIE_TXV_SeekBar_Caption"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentTop="true"
+                        android:gravity="center_vertical"
+
+                        android:paddingLeft="5dp"
+                        android:text="Caption Size: " />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layoutDirection="rtl"
+                        android:paddingRight="15dp">
+
+                        <ImageView
+                            android:id="@+id/GIE_IMG_BTN_Setting_Cancel"
+
+                            android:layout_width="35dp"
+                            android:layout_height="match_parent"
+                            android:layout_margin="3dp"
+
+                            android:clickable="true"
+                            android:src="@drawable/icon_download_cancel" />
+
+                        <SeekBar
+                            android:id="@+id/GIE_SeekBar"
+                            style="@android:style/Widget.DeviceDefault.Light.SeekBar"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_alignParentTop="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_toEndOf="@+id/GIE_TXV_SeekBar_Caption"
+                            android:indeterminate="false"
+                            android:layoutDirection="ltr"
+                            android:max="80"
+                            android:progress="16" />
+
+                    </LinearLayout>
+                </LinearLayout>
+                <!-- FRAMES VIEW -->
+                <HorizontalScrollView
+                    android:id="@+id/GIE_HS_Frames"
+                    android:layout_width="fill_parent"
+                    android:layout_height="50dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginBottom="10dp"
+                    android:background="#111"
+                    android:visibility="visible">
+
+                    <LinearLayout
+                        android:id="@+id/framesLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+
+                    </LinearLayout>
+                </HorizontalScrollView>
+
+                <LinearLayout
+                    android:id="@+id/GIE_LL_EDT_Caption"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/GIE_EDT_Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_weight="0.9"
+                        android:text="Caption" />
+
+                    <ImageView
+                        android:id="@+id/GIE_IMG_Font_Color"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.1"
+                        android:padding="5dp"
+                        app:srcCompat="@drawable/icon_font_color" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/GIE_LL_Edit_Controls"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:background="@color/black_overlay"
+                android:orientation="horizontal"
+                tools:ignore="UselessParent">
+
+                <ImageView
+                    android:id="@+id/GIE_IMG_BTN_Back"
+                    style="?metaButtonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:src="@android:drawable/ic_menu_revert" />
+
+                <ImageView
+                    android:id="@+id/GIE_IMG_BTN_Crop"
+                    style="?metaButtonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:src="@android:drawable/ic_menu_crop" />
+
+                <ImageView
+                    android:id="@+id/GIE_IMG_BTN_Frame"
+                    style="?metaButtonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:src="@drawable/frames_butt" />
+
+                <ImageView
+                    android:id="@+id/GIE_IMG_BTN_Caption"
+                    style="?metaButtonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:src="@drawable/caption_butt" />
+
+                <ImageView
+                    android:id="@+id/GIE_IMG_BTN_OK"
+                    style="?metaButtonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:src="@drawable/icon_ok_green" />
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </FrameLayout>
+</LinearLayout>

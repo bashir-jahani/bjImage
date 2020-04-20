@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import bj.modules.bj_pth_files;
+import bj.modules.bj_path_files;
 
 
 /**
@@ -35,15 +35,15 @@ public class bj_imagesAlbum_Utils {
 
     // Reading file paths from SDCard
 
-    public  ArrayList<bj_image.GImageNotice> getFilePaths(String DirectoryPath) {
+    public  ArrayList<bj_imageNotice> getFilePaths(String DirectoryPath) {
         String[] filePaths=null ;
 
         File directory = new File(DirectoryPath);
-        ArrayList<bj_image.GImageNotice> RS;
+        ArrayList<bj_imageNotice> RS;
         // check for directory
         if (directory.isDirectory()) {
             // getting list of file paths
-            FilenameFilter only=new bj_pth_files.OnlyExt(_FILE_EXTN);
+            FilenameFilter only=new bj_path_files.OnlyExt(_FILE_EXTN);
             String files[]= directory.list(only);
 
             //Toast.makeText(_context, DirectoryPath + File.separator+ files[0], Toast.LENGTH_SHORT).show();
@@ -51,12 +51,11 @@ public class bj_imagesAlbum_Utils {
             // Check for count
             if (files.length > 0) {
                 Arrays.sort(files);
-                RS=new ArrayList<bj_image.GImageNotice>();
+                RS=new ArrayList<bj_imageNotice>();
                 for(int i=0;i<files.length;i++){
-                    bj_image.GImageNotice p=new bj_image.GImageNotice();
-                    p.ImagePath=DirectoryPath + File.separator+ files[i];
+                    bj_imageNotice p=new bj_imageNotice();
+                    p.SetImagePath(DirectoryPath + File.separator+ files[i],false,false);
 
-                    p.IsThumb=false;
                     RS.add(p);
                 }
             } else {

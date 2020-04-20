@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -14,9 +16,15 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.ColorRes;
+import androidx.annotation.DrawableRes;
+
+
 import com.bumptech.glide.Glide;
 
+
 import bj.modules.bj_image.R;
+import bj.modules.bj_image.bj_image;
 
 import static bj.modules.bj_file.GetFileExtension;
 
@@ -27,7 +35,7 @@ import static bj.modules.bj_file.GetFileExtension;
 
 public class imagesView_TouchImageView extends ImageView {
     Matrix matrix;
-
+    Context mContext;
     // We can be in one of these 3 states
     static final int NONE = 0;
     static final int DRAG = 1;
@@ -66,13 +74,24 @@ public class imagesView_TouchImageView extends ImageView {
             setImageBitmap(src);
         }
     }
+    public void SetImage(@DrawableRes int resourceID){
+        Glide.with(getContext()).load(context.getResources().getDrawable(resourceID)).into(imagesView_TouchImageView.this);
 
+    }
+    public void SetImageAsCircle(@DrawableRes int resourceID, Integer CournerRadius, @ColorRes int BorderColor, int BorderSize, @ColorRes int ShadowColor, Integer ShadowSize, Boolean CenterShadow, Boolean InversShadow, @ColorRes int SecondBorderColor, int SecondBorderSiz, int ResizeImageWidth, @DrawableRes int  errorImageDrawableResource, @DrawableRes int  placeholderImageDrawableResource){
+        bj_image bj_image1=new bj_image();
+        bj_image1.Load_PictureTo_ImageView(resourceID,imagesView_TouchImageView.this,CournerRadius,BorderColor,BorderSize,ShadowColor,ShadowSize,CenterShadow,InversShadow,SecondBorderColor,SecondBorderSiz,ResizeImageWidth,errorImageDrawableResource,placeholderImageDrawableResource);
+    }
+    public void SetImageAsCircle(String ImagePath, Integer CournerRadius, @ColorRes int BorderColor, int BorderSize, @ColorRes int ShadowColor, Integer ShadowSize, Boolean CenterShadow, Boolean InversShadow, @ColorRes int SecondBorderColor, int SecondBorderSiz, int ResizeImageWidth, @DrawableRes int  errorImageDrawableResource, @DrawableRes int  placeholderImageDrawableResource){
+        bj_image bj_image1=new bj_image();
+        bj_image1.Load_PictureTo_ImageView(ImagePath,imagesView_TouchImageView.this,CournerRadius,BorderColor,BorderSize,ShadowColor,ShadowSize,CenterShadow,InversShadow,SecondBorderColor,SecondBorderSiz,ResizeImageWidth,errorImageDrawableResource,placeholderImageDrawableResource);
+    }
     public imagesView_TouchImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         sharedConstructing(context);
-        TypedArray a=getContext().obtainStyledAttributes(attrs, R.styleable.BJImagesView_TouchImageView);;
-        minScale=a.getFloat(R.styleable.BJImagesView_TouchImageView_minScale,1);
-        maxScale=a.getFloat(R.styleable.BJImagesView_TouchImageView_maxScale,3);
+        TypedArray a=getContext().obtainStyledAttributes(attrs, R.styleable.imagesView_TouchImageView);;
+        minScale=a.getFloat(R.styleable.imagesView_TouchImageView_minScale,1);
+        maxScale=a.getFloat(R.styleable.imagesView_TouchImageView_maxScale,3);
     }
     public void SetminScale(float MinScale){
         minScale=MinScale;
@@ -185,7 +204,9 @@ public class imagesView_TouchImageView extends ImageView {
                         int xDiff = (int) Math.abs(curr.x - start.x);
                         int yDiff = (int) Math.abs(curr.y - start.y);
                         if (xDiff < CLICK && yDiff < CLICK) {
-                            performContextClick();
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                performContextClick();
+                            }
                             performClick();
 
                         }

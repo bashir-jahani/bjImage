@@ -19,7 +19,7 @@ package bj.modules.bj_image;
         import java.io.FileNotFoundException;
         import java.util.ArrayList;
 
-        import static bj.modules.bj_image_classes.FragmentOpen;
+        import static bj.modules.bj_image_classes.fragmentOpen;
 
 
 /**
@@ -29,11 +29,11 @@ package bj.modules.bj_image;
 class bj_imagesAlbum_GridViewImageAdapter extends BaseAdapter {
     private AppCompatActivity _activity;
 
-    private ArrayList<bj_image.GImageNotice> _filePaths ;
+    private ArrayList<bj_imageNotice> _filePaths ;
     private int imageWidth;
     Boolean CanAdd,CanDel;
 
-    public bj_imagesAlbum_GridViewImageAdapter(AppCompatActivity activity, ArrayList<bj_image.GImageNotice> filePaths,
+    public bj_imagesAlbum_GridViewImageAdapter(AppCompatActivity activity, ArrayList<bj_imageNotice> filePaths,
                                               int imageWidth, Boolean CanAdd, Boolean CanDel) {
         this._activity = activity;
         this._filePaths = filePaths;
@@ -46,6 +46,7 @@ class bj_imagesAlbum_GridViewImageAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
+
         return this._filePaths.size();
     }
 
@@ -100,7 +101,7 @@ class bj_imagesAlbum_GridViewImageAdapter extends BaseAdapter {
         public void onClick(View v) {
             // on selecting grid view image
             // launch full screen activity
-            FragmentOpen(  _activity.getSupportFragmentManager(),new bj_imagesAlbumFullScreen((Context)_activity, _postion,false,_filePaths,CanAdd,CanDel),true, bj_imagesAlbum_AppConstant.FragmentContainerID);
+            fragmentOpen(  _activity.getSupportFragmentManager(),new bj_imagesAlbumFullScreenFragment( _postion,false,_filePaths,CanAdd,CanDel),true, bj_imagesAlbum_AppConstant.FragmentContainerID);
             //Intent i = new Intent(_activity, FullScreenViewActivity.class);
             //i.putExtra("position", _postion);
             //_activity.startActivity(i);

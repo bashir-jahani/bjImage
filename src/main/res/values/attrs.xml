@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="BJStepsRectangles">
-        <attr name="StepWidth" format="dimension"/>
-        <attr name="StepHeigth" format="dimension"/>
 
-        <attr name="StepEndMargin" format="dimension"/>
-        <attr name="StepCount" format="integer"/>
-    </declare-styleable>
-    <declare-styleable name="BJImagesView_TouchImageView">
+    <declare-styleable name="imagesView_TouchImageView">
 
         <attr name="minScale" format="float" />
         <attr name="maxScale" format="float" />

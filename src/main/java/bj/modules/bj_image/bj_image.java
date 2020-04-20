@@ -20,6 +20,7 @@ import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 
 import android.util.Base64;
@@ -67,7 +68,21 @@ import static bj.modules.bj_permission.CheckPermision;
  */
 
 public class bj_image {
+    private static final String TAG="bj_image";
     public static class selectImage{
+        private static File createCameraTemporaryFile(String part, String ext) throws Exception
+        {
+            File tempDir= Environment.getExternalStorageDirectory();
+            tempDir=new File(tempDir.getAbsolutePath()+"/.temp/");
+            if(!tempDir.exists())
+            {
+                tempDir.mkdirs();
+            }
+            return File.createTempFile(part, ext, tempDir);
+        }
+        public static Uri UriForCameraImage(){
+            return mUriForCameraImage;
+        }
         private static Uri mUriForCameraImage;
         public static Uri ImageUriFromGalleryAndContent(Intent data){
             return data.getData();
@@ -125,11 +140,15 @@ public class bj_image {
 
             if (SelectedItem.ID== BJRequestCodes.REQUEST_CODE_FILE_FROM_CAMERA){
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
                 if (mUriForCameraImage!=null){
+
 
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, mUriForCameraImage);
                 }
+
                 startActivityForResult((Activity)context,intent, BJRequestCodes.REQUEST_CODE_FILE_FROM_CAMERA,null);
+                //startActivityForResult(intent, BJRequestCodes.REQUEST_CODE_FILE_FROM_CAMERA);
                 return;
             }
             if (SelectedItem.ID== BJRequestCodes.REQUEST_CODE_FILE_FROM_CONTENT){
@@ -145,54 +164,77 @@ public class bj_image {
                 startActivityForResult((Activity)context,pickPhoto, BJRequestCodes.REQUEST_CODE_FILE_FROM_GALERY,null);
             }
         }
-        public static void StartActivityForResult(String title,final Context context,Uri UriForCameraImage) {
-            mUriForCameraImage=UriForCameraImage;
-             final BJAlertDialog.BJAlertDialogItem[] items = {
-                    new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_GALERY,context.getString(R.string.from_gallery), android.R.drawable.ic_menu_gallery),
-                    new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_CONTENT,context.getString(R.string.from_content), android.R.drawable.ic_menu_more),
-                    new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_CAMERA,context.getString(R.string.from_camera), android.R.drawable.ic_menu_camera),
-                    new BJAlertDialog.BJAlertDialogItem(-1,context.getString(R.string.cancel)),//no icon for this one
-            };
+        public static void SelectImageMethodeDialog(String title, final Context context, boolean useCamera) {
+            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+            StrictMode.setVmPolicy(builder.build());
 
+            if (useCamera) {
+                File photo;
+                try
+                {
+                    // place where to store camera taken picture
+                    photo = createCameraTemporaryFile("picture", ".jpg");
+                    photo.delete();
 
-
-            GAD=new BJAlertDialog(context, title, R.drawable.ic_menu_gallery,
-
-                    items, new AdapterView.OnItemClickListener() {
-                             @Override
-                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                UserSelectAction(context, items[position]);
-
-                            }
-                    });
-
-
-                    GAD.show();
-        }
-        public static void StartActivityForResult(String title,final Context context) {
-            mUriForCameraImage=null;
-            final BJAlertDialog.BJAlertDialogItem[] items = {
-                    new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_GALERY,context.getString(R.string.from_gallery), android.R.drawable.ic_menu_gallery),
-                    new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_CONTENT,context.getString(R.string.from_content), android.R.drawable.ic_menu_more),
-                    new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_CAMERA,context.getString(R.string.from_camera), android.R.drawable.ic_menu_camera),
-                    new BJAlertDialog.BJAlertDialogItem(-1,context.getString(R.string.cancel)),//no icon for this one
-            };
-
-
-
-            GAD=new BJAlertDialog(context, title, R.drawable.ic_menu_gallery,
-
-                    items, new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    UserSelectAction(context, items[position]);
-
+                    mUriForCameraImage = Uri.fromFile(photo);
                 }
-            });
+                catch(Exception e)
+                {
+                    Log.v(TAG, "Can't create file to take picture!");
+
+                    useCamera= false;
+                }
+
+            }
+            if (useCamera) {
 
 
-            GAD.show();
+                final BJAlertDialog.BJAlertDialogItem[] items = {
+                        new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_GALERY, context.getString(R.string.from_gallery), android.R.drawable.ic_menu_gallery),
+                        new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_CONTENT, context.getString(R.string.from_content), android.R.drawable.ic_menu_more),
+                        new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_CAMERA, context.getString(R.string.from_camera), android.R.drawable.ic_menu_camera),
+
+
+                        new BJAlertDialog.BJAlertDialogItem(-1, context.getString(R.string.cancel)),//no icon for this one
+                };
+                GAD=new BJAlertDialog(context, title, R.drawable.ic_menu_gallery,
+
+                        items, new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        UserSelectAction(context, items[position]);
+
+                    }
+                });
+
+
+                GAD.show();
+            }else {
+                final BJAlertDialog.BJAlertDialogItem[] items = {
+                        new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_GALERY, context.getString(R.string.from_gallery), android.R.drawable.ic_menu_gallery),
+                        new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_CONTENT, context.getString(R.string.from_content), android.R.drawable.ic_menu_more),
+                        //new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_CAMERA, context.getString(R.string.from_camera), android.R.drawable.ic_menu_camera),
+
+
+                        new BJAlertDialog.BJAlertDialogItem(-1, context.getString(R.string.cancel)),//no icon for this one
+                };
+                GAD=new BJAlertDialog(context, title, R.drawable.ic_menu_gallery,
+
+                        items, new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        UserSelectAction(context, items[position]);
+
+                    }
+                });
+
+
+                GAD.show();
+            }
+
+
         }
+
 
         public static class Utility {
             public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
@@ -236,14 +278,14 @@ public class bj_image {
 }
     public static void SaveImageToGallery(Context context, String ImagePath, OnGFileDialogResultListener listener){
         bj_file InFile=new bj_file(ImagePath,context);
-        InFile.GFCopy(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+File.separator+"G-Apps", listener );
+        InFile.GFCopy(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+File.separator+context.getApplicationInfo().processName, listener );
     }
     public static Boolean SaveImageToGallery(Context context,Bitmap ImageBitmap,String ImageName){
         Boolean RS=false;
         String OutputPath;
-        File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"G-Apps");
+        File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),context.getApplicationInfo().processName);
 
-        OutputPath = storageDir + File.pathSeparator + ImageName;
+        OutputPath = storageDir +  File.separator + ImageName;
         File OutFile=new File(OutputPath);
 
         OutputStream os = null;
@@ -281,7 +323,7 @@ public class bj_image {
         String OutputPath;
 
 
-        OutputPath = DirectoryPath + File.pathSeparator + ImageName;
+        OutputPath = DirectoryPath +  File.separator + ImageName;
         File OutFile=new File(OutputPath);
 
         OutputStream os = null;
@@ -309,7 +351,7 @@ public class bj_image {
         String OutputPath;
 
 
-        OutputPath = Directory + File.pathSeparator + ImageName;
+        OutputPath = Directory +  File.separator + ImageName;
         File OutFile=new File(OutputPath);
 
         OutputStream os = null;
@@ -332,7 +374,14 @@ public class bj_image {
 
         return RS;
     }
+    public static boolean Exist(Context context, String imagePath){
+        bj_file bjFile=new bj_file(imagePath,context);
 
+        if (bjFile.isDirectory()){
+            return false;
+        }
+        return bjFile.exists();
+    }
     public static void UpdateGallery(Context context, String ImagePath){
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File file = new File(ImagePath);
@@ -347,45 +396,45 @@ public class bj_image {
         mediaScanIntent.setData(contentUri);
        context. sendBroadcast (mediaScanIntent);
     }
-    public static Fragment GImagesAlbumOpen(Boolean AsFullScreen, Context context, String DirectoryPath, Boolean GotoLast, Integer position, @Nullable List<String> FILE_EXTN, Boolean CanAdd, Boolean CanDell) {
+    public static Fragment bj_imagesAlbumOpen(Boolean AsFullScreen, Context context, String DirectoryPath, Boolean GotoLast, Integer position, @Nullable List<String> FILE_EXTN, Boolean CanAdd, Boolean CanDell) {
         if (FILE_EXTN == null  ) {
             FILE_EXTN = Arrays.asList("jpg", "jpeg", "png");
         }
         Fragment fragment ;
         if(AsFullScreen) {
-            fragment = new bj_imagesAlbumFullScreen(context,position,GotoLast, DirectoryPath, FILE_EXTN,CanAdd,CanDell);
+            fragment = new bj_imagesAlbumFullScreenFragment(position,GotoLast, DirectoryPath, FILE_EXTN,CanAdd,CanDell);
         }else {
-            fragment=new bj_imagesAlbumGridView(DirectoryPath,FILE_EXTN,CanAdd,CanDell);
+            fragment=new bj_imagesAlbumGridViewFragment(DirectoryPath,FILE_EXTN,CanAdd,CanDell);
         }
         return fragment;
     }
-    public static Fragment GImagesAlbumOpen(Context context, Boolean AsFullScreen, ArrayList<GImageNotice> ImagePaths, Boolean GotoLast, Integer position, Boolean CanAdd, Boolean CanDell) {
+    public static Fragment bj_imagesAlbumOpen(Context context, Boolean AsFullScreen, ArrayList<bj_imageNotice> ImagePaths, Boolean GotoLast, Integer position, Boolean CanAdd, Boolean CanDell) {
 
         Fragment fragment ;
         if(AsFullScreen) {
-            fragment = new bj_imagesAlbumFullScreen(context, position,GotoLast, ImagePaths,CanAdd,CanDell);
+            fragment = new bj_imagesAlbumFullScreenFragment( position,GotoLast, ImagePaths,CanAdd,CanDell);
         }else {
-            fragment=new bj_imagesAlbumGridView( ImagePaths,CanAdd,CanDell);
+            fragment=new bj_imagesAlbumGridViewFragment( ImagePaths,CanAdd,CanDell);
         }
         return fragment;
     }
-    public static Fragment GImagesAlbumOpen(Context context, Boolean AsFullScreen, ArrayList<GImageNotice> ImagePaths, Boolean GotoLast, Integer position, Boolean CanAdd, Boolean CanDell, bj_imagesAlbum_FullScreenImageAdapter.OnLoadOrginalRequestListener onLoadOrginalRequestListener) {
+    public static Fragment bj_imagesAlbumOpen(Context context, Boolean AsFullScreen, ArrayList<bj_imageNotice> ImagePaths, Boolean GotoLast, Integer position, Boolean CanAdd, Boolean CanDell, bj_imagesAlbum_FullScreenImageAdapter.OnLoadOrginalRequestListener onLoadOrginalRequestListener) {
 
         Fragment fragment ;
         if(AsFullScreen) {
-            fragment = new bj_imagesAlbumFullScreen(context, position,GotoLast, ImagePaths,onLoadOrginalRequestListener,CanAdd,CanDell);
+            fragment = new bj_imagesAlbumFullScreenFragment( position,GotoLast, ImagePaths,onLoadOrginalRequestListener,CanAdd,CanDell);
         }else {
-            fragment=new bj_imagesAlbumGridView(ImagePaths,CanAdd,CanDell);
+            fragment=new bj_imagesAlbumGridViewFragment(ImagePaths,CanAdd,CanDell);
         }
         return fragment;
     }
-    public static Fragment GImagesAlbumOpen(Context context, Boolean AsFullScreen, ArrayList<GImageNotice> ImagePaths, Boolean GotoLast, Integer position, Boolean CanAdd, Boolean CanDell, bj_imagesAlbum_FullScreenImageAdapter.OnLoadOrginalRequestListener onLoadOrginalRequestListener, bj_imagesAlbum_FullScreenImageAdapter.OnLoadThumbRequestListener onLoadThumbRequestListener) {
+    public static Fragment bj_imagesAlbumOpen( Boolean AsFullScreen, ArrayList<bj_imageNotice> ImagePaths, Boolean GotoLast, Integer position, Boolean CanAdd, Boolean CanDell, bj_imagesAlbum_FullScreenImageAdapter.OnLoadOrginalRequestListener onLoadOrginalRequestListener, bj_imagesAlbum_FullScreenImageAdapter.OnLoadThumbRequestListener onLoadThumbRequestListener) {
 
         Fragment fragment ;
         if(AsFullScreen) {
-            fragment = new bj_imagesAlbumFullScreen(context, position,GotoLast, ImagePaths,onLoadOrginalRequestListener, onLoadThumbRequestListener,CanAdd,CanDell);
+            fragment = new bj_imagesAlbumFullScreenFragment( position,GotoLast, ImagePaths,onLoadOrginalRequestListener, onLoadThumbRequestListener,CanAdd,CanDell);
         }else {
-            fragment=new bj_imagesAlbumGridView(ImagePaths,CanAdd,CanDell);
+            fragment=new bj_imagesAlbumGridViewFragment(ImagePaths,CanAdd,CanDell);
         }
         return fragment;
     }
@@ -550,7 +599,7 @@ public class bj_image {
     @NonNull
     public  static Boolean ImageSave(Context context, String ImagePath, String ImageBase64String)   {
         final boolean[] _HavePermission = {false};
-        //Log.d("GGN","ImageSave:" + "\n" + ImagePath + "\n" + ImageBase64String);
+        //Log.d("bj modules","ImageSave:" + "\n" + ImagePath + "\n" + ImageBase64String);
         CheckPermision(context, Manifest.permission.READ_EXTERNAL_STORAGE, R.string.permission_save_images, new bj_permission.OnGetPermissionListener() {
             @Override
             public void onPermissionProcesComplated(String PermissionNeeded, Boolean HavePermission) {
@@ -560,7 +609,7 @@ public class bj_image {
         boolean Saved=false;
 
         if (_HavePermission[0]) {
-            Log.d("GGN", "ImageSave : " + ImagePath);
+            Log.d("bj modules", "ImageSave : " + ImagePath);
             try {
 
                 byte[] decodedString = Base64.decode(ImageBase64String, Base64.DEFAULT);
@@ -576,11 +625,11 @@ public class bj_image {
                 }
 
             } catch (IOException e) {
-                Log.d("GGN", "ImageSave Error: " + e.getMessage());
+                Log.d("bj modules", "ImageSave Error: " + e.getMessage());
             }
 
             File file1 = new File(ImagePath);
-            Log.d("GGN", "ImageSave result: " + (file1.exists() & file1.isFile()));
+            Log.d("bj modules", "ImageSave result: " + (file1.exists() & file1.isFile()));
 
 
 
@@ -605,7 +654,7 @@ public class bj_image {
 
 
         if (_HavePermission[0]) {
-            Log.d("GGN","ImageSave : " +ImagePath);
+            Log.d("bj modules","ImageSave : " +ImagePath);
             try{
 
 
@@ -621,20 +670,21 @@ public class bj_image {
                 }
 
             }catch (IOException e){
-                Log.d("GGN","ImageSave Error: " +e.getMessage());
+                Log.d("bj modules","ImageSave Error: " +e.getMessage());
             }
 
             File file1 = new File(ImagePath);
-            Log.d("GGN","ImageSave result: " +(file1.exists() & file1.isFile()));
+            Log.d("bj modules","ImageSave result: " +(file1.exists() & file1.isFile()));
 
         }else {
             MessageBoxAsError(context.getResources().getString(R.string.permission_not_accept),context);
         }
         return Saved;
     }
-    public static Bitmap Load_PictureTo_ImageView(Context context,String ImageFilePath,   ImageView ImageViewForShow, Integer CournerRadius, @ColorRes int BorderColor, int BorderSize, @ColorRes int ShadowColor, Integer ShadowSize, Boolean CenterShadow, Boolean InversShadow, @ColorRes int SecondBorderColor, int SecondBorderSiz, int ResizeImageWidth, @DrawableRes int  errorImageDrawableResource,  @DrawableRes int  placeholderImageDrawableResource){
+    public static Bitmap Load_PictureTo_ImageView(String ImageFilePath,   ImageView ImageViewForShow, Integer CournerRadius, @ColorRes int BorderColor, int BorderSize, @ColorRes int ShadowColor, Integer ShadowSize, Boolean CenterShadow, Boolean InversShadow, @ColorRes int SecondBorderColor, int SecondBorderSiz, int ResizeImageWidth, @DrawableRes int  errorImageDrawableResource,  @DrawableRes int  placeholderImageDrawableResource){
+        Context context=ImageViewForShow.getContext();
         final boolean[] _HavePermission = {false};
-        Log.e("GGN","Load_PictureTo_ImageView " );
+        //Log.e("bj modules","Load_PictureTo_ImageView " );
         CheckPermision(context, Manifest.permission.READ_EXTERNAL_STORAGE, R.string.permission_save_images, new bj_permission.OnGetPermissionListener() {
             @Override
             public void onPermissionProcesComplated(String PermissionNeeded, Boolean HavePermission) {
@@ -646,7 +696,7 @@ public class bj_image {
         if (_HavePermission[0]){
             Mybitmap=CournerRadiusForImage(context, null,ImageFilePath,CournerRadius,BorderColor,BorderSize,ShadowColor,ShadowSize,CenterShadow,InversShadow,SecondBorderColor,SecondBorderSiz,ResizeImageWidth);
             if(Mybitmap!=null) {
-                Log.e("GGN","Load_PictureTo_ImageView :Mybitmap <> null" );
+                //Log.e("bj modules","Load_PictureTo_ImageView :Mybitmap <> null" );
                 try {
                     if (placeholderImageDrawableResource==-1) {
                         Glide.with(ImageViewForShow.getContext()).load(BitmapToByte(Mybitmap)).into(ImageViewForShow);
@@ -655,23 +705,23 @@ public class bj_image {
                     }
 
                     //ImageViewForShow.setImageBitmap(Mybitmap);
-                    Log.e("GGN","Load_PictureTo_ImageView :Mybitmap Loaded" );
+                    //Log.e("bj modules","Load_PictureTo_ImageView :Mybitmap Loaded" );
                 }catch (Exception e){
                     try{
-                        Log.e("GGN","Load_PictureTo_ImageView : Load errorImageDrawableResource after cant Load MyBitmap"+ "\n"+ e.getMessage() );
+                        //Log.e("bj modules","Load_PictureTo_ImageView : Load errorImageDrawableResource after cant Load MyBitmap"+ "\n"+ e.getMessage() );
                         Glide.with(ImageViewForShow.getContext()).load(errorImageDrawableResource).into(ImageViewForShow);
                         //ImageViewForShow.setImageResource(errorImageDrawableResource);
                     }catch (Exception e1){
-                        Log.e("GGN","Load_PictureTo_ImageView : Cant Load errorImageDrawableResource"+ "\n"+ e1.getMessage());
+                        Log.e("bj modules","Load_PictureTo_ImageView : Cant Load errorImageDrawableResource"+ "\n"+ e1.getMessage());
                     }
 
                 }
             }else {
                 try{
-                    Log.e("GGN","Load_PictureTo_ImageView : Load errorImageDrawableResource" );
+                    //Log.e("bj modules","Load_PictureTo_ImageView : Load errorImageDrawableResource" );
                     Glide.with(ImageViewForShow.getContext()).load(errorImageDrawableResource).into(ImageViewForShow);
                 }catch (Exception e1){
-                    Log.e("GGN","error :Load_PictureTo_ImageView : cant Load errorImageDrawableResource" + "\n"+ e1.getMessage());
+                    Log.e("bj modules","error :Load_PictureTo_ImageView : cant Load errorImageDrawableResource" + "\n"+ e1.getMessage());
                 }
             }
 
@@ -680,9 +730,9 @@ public class bj_image {
         }
         return Mybitmap;
     }
-    public static Bitmap Load_PictureTo_ImageView(Context context,@DrawableRes int ImageDrawableResourceID, ImageView ImageViewForShow, Integer CournerRadius, @ColorRes int BorderColor, int BorderSize, @ColorInt @ColorRes int ShadowColor, Integer ShadowSize, Boolean CenterShadow, Boolean InversShadow, @ColorInt  @ColorRes int SecondBorderColor, int SecondBorderSiz, int ResizeImageWidth, @DrawableRes int  errorImageDrawableResource, @DrawableRes int  placeholderImageDrawableResource){
+    public static Bitmap Load_PictureTo_ImageView(@DrawableRes int ImageDrawableResourceID, ImageView ImageViewForShow, Integer CournerRadius, @ColorRes int BorderColor, int BorderSize, @ColorInt @ColorRes int ShadowColor, Integer ShadowSize, Boolean CenterShadow, Boolean InversShadow, @ColorInt  @ColorRes int SecondBorderColor, int SecondBorderSiz, int ResizeImageWidth, @DrawableRes int  errorImageDrawableResource, @DrawableRes int  placeholderImageDrawableResource){
 
-
+        Context context=ImageViewForShow.getContext();
         Bitmap Mybitmap =null;
         Mybitmap=CournerRadiusForImage(context, null,ImageDrawableResourceID,CournerRadius,BorderColor,BorderSize,ShadowColor,ShadowSize,CenterShadow,InversShadow,SecondBorderColor,SecondBorderSiz,ResizeImageWidth);
         if(Mybitmap!=null) {
@@ -717,7 +767,7 @@ public class bj_image {
 
     public static Bitmap PictureBoxFrameForImage(Context context,@Nullable ImageView ImageViewForShow, @ColorRes int color, Integer BoxSiz, String ImagePath, int ResizeImageWidth){
         if (!(ImagePath==null)){
-            //Log.e("GGN", ImagePath);
+            //Log.e("bj modules", ImagePath);
             File file=new File(ImagePath);
 
             if (file.exists()) {
@@ -749,7 +799,7 @@ public class bj_image {
     }
     public static Bitmap CournerRadiusForImage(Context context,@Nullable ImageView ImageViewForShow,String ImagePath,Integer Radius, @ColorRes int BorderColor,int BorderSize, @ColorRes int ShadowColor,Integer ShadowSize,Boolean CenterShadow,Boolean InversShadow, @ColorRes int SecondBorderColor,int SecondBorderSize,int ResizeImageWidth){
         if (!(ImagePath==null)){
-            //Log.e("GGN", ImagePath);
+            //Log.e("bj modules", ImagePath);
             File file=new File(ImagePath);
 
             if (file.exists() & file.isFile()) {
@@ -866,6 +916,7 @@ public class bj_image {
                 return result;
 
             }else {
+                Log.e(TAG, "CournerRadiusForImage: image exist: "+file.exists()+" is file: "+file.isFile()+System.lineSeparator()+file.getAbsolutePath() );
                 return null;
             }
         }else {
@@ -971,7 +1022,7 @@ public class bj_image {
     }
     public static Bitmap CournerRadiusForImage(@Nullable ImageView ImageViewForShow,String ImagePath,Integer Radius,int ResizeImageWidth){
         if (!(ImagePath==null)){
-            //Log.e("GGN", ImagePath);
+            //Log.e("bj modules", ImagePath);
             File file=new File(ImagePath);
 
             if (file.exists() & file.isFile()) {
@@ -1238,10 +1289,10 @@ public class bj_image {
             //canvas.drawBitmap(firstImage, 0f, 0f, null);
             canvas.drawBitmap(source, Size, Size, null);
             errn=20;
-            //Log.e("GGN","new Border Proces");
+            //Log.e("bj modules","new Border Proces");
             return result;
         }catch (Exception e){
-            Log.e("GGN","Error num " + errn + ": "+ e.getMessage());
+            Log.e("bj modules","Error num " + errn + ": "+ e.getMessage());
             return source;
         }
 
@@ -1303,7 +1354,7 @@ public class bj_image {
 
         //canvas.drawBitmap(firstImage, 0f, 0f, null);
 
-        //Log.e("GGN","new Shadow Proces");
+        //Log.e("bj modules","new Shadow Proces");
         return result;
 
     }
@@ -1328,10 +1379,5 @@ public class bj_image {
         return px;
 
     }
-    public static class GImageNotice{
-        public  String ImagePath;
-        public  Boolean IsThumb;
-        public  String ImageName;
-        public long ImageSize;
-    }
+
 }
