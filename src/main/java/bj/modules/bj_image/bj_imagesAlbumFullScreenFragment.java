@@ -3,6 +3,7 @@ package bj.modules.bj_image;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 
+import android.app.Activity;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -37,7 +38,7 @@ import bj.modules.bj_file_objcets.file_object;
 import bj.modules.bj_messageBox_objcets.messageBox;
 
 import static bj.modules.bj_messageBox.*;
-
+import bj.modules.bj_image. bj_loadable_image_listeners.*;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -69,9 +70,9 @@ public class bj_imagesAlbumFullScreenFragment extends Fragment {
     private bj_imagesAlbum_Utils utils;
     List<String> mFILE_EXTN;
     String mDirectoryPath;
-    private bj_imagesAlbum_FullScreenImageAdapter.OnLoadOrginalRequestListener mOnLoadOrginalRequestListener;
-    private bj_imagesAlbum_FullScreenImageAdapter.OnLoadThumbRequestListener mOnLoadThumbRequestListener;
-    private bj_imagesAlbum_FullScreenImageAdapter.OnUploadingImageListener mOnUploadingImageListener;
+    private OnLoadOrginalRequestListener mOnLoadOrginalRequestListener;
+    private OnLoadThumbRequestListener mOnLoadThumbRequestListener;
+    private OnUploadingImageListener mOnUploadingImageListener;
 
     private OnNewImageRequest mOnNewImageRequest;
     private OnDelleteImageRequest mOnDelleteImageRequest;
@@ -79,7 +80,7 @@ public class bj_imagesAlbumFullScreenFragment extends Fragment {
     private String TAG="bj_imagesAlbumFullScreenFragment";
     // variables end
     //constractors start
-    public bj_imagesAlbumFullScreenFragment(Integer FileIndex, Boolean GoToLast, @NonNull ArrayList<bj_imageNotice> ImagePaths, bj_imagesAlbum_FullScreenImageAdapter.OnLoadOrginalRequestListener onLoadOrginalRequestListener , bj_imagesAlbum_FullScreenImageAdapter.OnLoadThumbRequestListener onLoadThumbRequestListener, bj_imagesAlbum_FullScreenImageAdapter.OnUploadingImageListener onUploadingImageListener, Boolean CanAdd, Boolean CanDell) {
+    public bj_imagesAlbumFullScreenFragment(Integer FileIndex, Boolean GoToLast, @NonNull ArrayList<bj_imageNotice> ImagePaths, OnLoadOrginalRequestListener onLoadOrginalRequestListener , OnLoadThumbRequestListener onLoadThumbRequestListener, OnUploadingImageListener onUploadingImageListener, Boolean CanAdd, Boolean CanDell) {
         // Required empty public constructor
         mPosition=FileIndex;
 
@@ -102,7 +103,7 @@ public class bj_imagesAlbumFullScreenFragment extends Fragment {
         this.CanDell=CanDell;
 
     }
-    public bj_imagesAlbumFullScreenFragment( Integer FileIndex, Boolean GoToLast, @NonNull ArrayList<bj_imageNotice> ImagePaths, bj_imagesAlbum_FullScreenImageAdapter.OnLoadOrginalRequestListener onLoadOrginalRequestListener , bj_imagesAlbum_FullScreenImageAdapter.OnLoadThumbRequestListener onLoadThumbRequestListener, Boolean CanAdd, Boolean CanDell) {
+    public bj_imagesAlbumFullScreenFragment( Integer FileIndex, Boolean GoToLast, @NonNull ArrayList<bj_imageNotice> ImagePaths, OnLoadOrginalRequestListener onLoadOrginalRequestListener , OnLoadThumbRequestListener onLoadThumbRequestListener, Boolean CanAdd, Boolean CanDell) {
         // Required empty public constructor
         mPosition=FileIndex;
 
@@ -124,7 +125,7 @@ public class bj_imagesAlbumFullScreenFragment extends Fragment {
         this.CanDell=CanDell;
 
     }
-    public bj_imagesAlbumFullScreenFragment( Integer FileIndex, Boolean GoToLast, @NonNull ArrayList<bj_imageNotice> ImagePaths, bj_imagesAlbum_FullScreenImageAdapter.OnLoadOrginalRequestListener onLoadOrginalRequestListener , Boolean CanAdd, Boolean CanDell) {
+    public bj_imagesAlbumFullScreenFragment( Integer FileIndex, Boolean GoToLast, @NonNull ArrayList<bj_imageNotice> ImagePaths, OnLoadOrginalRequestListener onLoadOrginalRequestListener , Boolean CanAdd, Boolean CanDell) {
         // Required empty public constructor
         mPosition=FileIndex;
         mImagePaths=ImagePaths;
@@ -263,6 +264,9 @@ public class bj_imagesAlbumFullScreenFragment extends Fragment {
 		loadImages();
 
 	}
+	public void SetImagePathsFromGallery(@NonNull Activity activity){
+        mImagePaths =bj_image. getAllShownImagesPath(activity);
+    }
 
 	public void SetCanAdd(boolean canAdd){
     	this.CanAdd=canAdd;
@@ -270,20 +274,20 @@ public class bj_imagesAlbumFullScreenFragment extends Fragment {
 	public void SetCanDell(boolean canDell){
 		this.CanDell=canDell;
 	}
-    public void SetOnLoadThumbRequestListener(bj_imagesAlbum_FullScreenImageAdapter.OnLoadThumbRequestListener listener){
+    public void SetOnLoadThumbRequestListener(OnLoadThumbRequestListener listener){
         mOnLoadThumbRequestListener=listener;
         if (mPagerAdapter!=null){
             mPagerAdapter.SetOnLoadThumbRequestListener(listener);
         }
 
     }
-    public void SetOnUploadingImageListener(bj_imagesAlbum_FullScreenImageAdapter.OnUploadingImageListener listener){
+    public void SetOnUploadingImageListener(OnUploadingImageListener listener){
         mOnUploadingImageListener=listener;
         if (mPagerAdapter!=null){
             mPagerAdapter.SetOnUploadingImageListener(listener);
         }
     }
-    public void SetOnLoadOrginalRequestListener(bj_imagesAlbum_FullScreenImageAdapter.OnLoadOrginalRequestListener listener){
+    public void SetOnLoadOrginalRequestListener(OnLoadOrginalRequestListener listener){
         mOnLoadOrginalRequestListener=listener;
         if (mPagerAdapter!=null){
             mPagerAdapter.SetOnLoadOrginalRequestListener(listener);
@@ -348,6 +352,7 @@ public class bj_imagesAlbumFullScreenFragment extends Fragment {
                 BTNProcesDellete();
             }
         });
+
 
     }
     private void BTNProcesSave(){
@@ -936,17 +941,6 @@ public class bj_imagesAlbumFullScreenFragment extends Fragment {
     // neede for fulscreen end
 
     // neede for fulscreen start
-    public interface OnNewImageRequest{
-        public void OnNewImage();
-    }
-    public interface OnDelleteImageRequest{
-        public void OnDelleteImage(bj_imageNotice ImageNotice, Integer position);
-    }
-    public interface OnShareImageRequest{
-        public void OnShareImage(File imageFile, Uri imageUri);
-    }
-    public interface OnImageChangedListener {
-        public long OnChanged(Integer FileIndex, int FileCurrentNumber);
-    }
+
     // neede for fulscreen End
 }

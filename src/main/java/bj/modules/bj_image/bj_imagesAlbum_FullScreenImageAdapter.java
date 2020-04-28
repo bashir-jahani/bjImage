@@ -1,21 +1,15 @@
 package bj.modules.bj_image;
 
-import android.content.Context;
+import bj.modules.bj_image. bj_loadable_image_listeners.*;
+import bj.modules.bj_image_classes;
 
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 
 import androidx.viewpager.widget.PagerAdapter;
@@ -26,8 +20,6 @@ import com.bumptech.glide.Glide;
 import java.io.File;
 import java.util.ArrayList;
 
-import bj.modules.bj_image_objects.imagesView_TouchImageView;
-
 
 /**
  * Created by Bashir jahani on 1/24/2018.
@@ -35,6 +27,7 @@ import bj.modules.bj_image_objects.imagesView_TouchImageView;
 
 public class bj_imagesAlbum_FullScreenImageAdapter extends PagerAdapter {
     final String TAG ="bj_imagesAlbum_FullScreenImageAdapter";
+    @bj_image_classes.FileNotice int fileNoticeForShow;
     //private AppCompatActivity _activity;
     Handler handler;
     private ArrayList<bj_imageNotice> _imagesPath;
@@ -103,9 +96,9 @@ public class bj_imagesAlbum_FullScreenImageAdapter extends PagerAdapter {
             }
         }
     }
-    public bj_imagesAlbum_FullScreenImageAdapter(ArrayList<bj_imageNotice> imagesPath){
+    public bj_imagesAlbum_FullScreenImageAdapter(ArrayList<bj_imageNotice> imagesPath,@bj_image_classes.FileNotice int fileNoticeForShow){
         handler=new Handler();
-
+        this.fileNoticeForShow=fileNoticeForShow;
         if (imagesPath==null) {
             _imagesPath= new ArrayList<bj_imageNotice>();
             _imagesPath.add(new bj_imageNotice());
@@ -129,7 +122,47 @@ public class bj_imagesAlbum_FullScreenImageAdapter extends PagerAdapter {
     }
     @Override
     public Object instantiateItem(final ViewGroup container, final int position) {
-        final LoadableImageview MyView=new LoadableImageview(container.getContext(),_imagesPath.get(position).ImageName);
+
+
+        String imageNotice=null;
+        switch (fileNoticeForShow){
+            case bj_image_classes.FileNotice
+                    .ALBUME_NAME:
+                imageNotice=_imagesPath.get(position).ImageName;
+            case bj_image_classes.FileNotice
+                    .NAME:
+                imageNotice=_imagesPath.get(position).ImageAlbume;
+            case bj_image_classes.FileNotice
+                    .ALBUME_NAME_FILE_NAME:
+                imageNotice=_imagesPath.get(position).ImageAlbume+"/"+_imagesPath.get(position).ImageName;;
+            case bj_image_classes.FileNotice
+                    .DATE_TAKEN:
+                imageNotice=_imagesPath.get(position).GetDateTakenString();
+            case bj_image_classes.FileNotice
+                    .SIZE:
+                long fSize=_imagesPath.get(position).ImageSize;
+                String fSizeK=" Byte";
+
+
+                if (fSize>1024){
+                    fSize=fSize/1024;
+                    fSizeK=" KByte";
+                }
+                if (fSize>1024){
+                    fSize=fSize/1024;
+                    fSizeK=" MByte";
+                }
+                if (fSize>1024){
+                    fSize=fSize/1024;
+                    fSizeK=" GByte";
+                }
+                if (fSize>1024){
+                    fSize=fSize/1024;
+                    fSizeK=" TByte";
+                }
+                imageNotice=fSize+fSizeK;
+        }
+        final LoadableImageview MyView=new LoadableImageview(container.getContext(),imageNotice);
         if (!isNull ) {
             final File currentImageFile=new File(_imagesPath.get(position).GetImagePath());
 
@@ -155,12 +188,12 @@ public class bj_imagesAlbum_FullScreenImageAdapter extends PagerAdapter {
             });
         }else {
             // image list is empty so show message
-            MyView.imageView.setImageResource(R.drawable.no_images_available);
+            MyView.touchImageView.setImageResource(R.drawable.no_images_available);
         }
 
         // perform click event
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            MyView.imageView.setOnContextClickListener(new View.OnContextClickListener() {
+            MyView.touchImageView.setOnContextClickListener(new View.OnContextClickListener() {
                 @Override
                 public boolean onContextClick(View v) {
                     container.performContextClick();
@@ -169,7 +202,7 @@ public class bj_imagesAlbum_FullScreenImageAdapter extends PagerAdapter {
                 }
             });
         }else {
-            MyView.imageView.setOnClickListener(new View.OnClickListener() {
+            MyView.touchImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     container.performClick();
@@ -201,9 +234,9 @@ public class bj_imagesAlbum_FullScreenImageAdapter extends PagerAdapter {
             if (imageFile.exists()){
 
                 if (!isThumbNail || _imagesPath.get(position).GetNeedUpload()){
-                    Glide.with(MyView.getContext()).load(imageFile).into(MyView.imageView);
+                    Glide.with(MyView.getContext()).load(imageFile).placeholder(R.drawable.loading).into(MyView.touchImageView);
                 }else {
-                    MyView.imageView.SetImage(imageFile.getAbsolutePath());
+                    MyView.touchImageView.SetImage(imageFile.getAbsolutePath());
                 }
 
             }else {
@@ -220,11 +253,11 @@ public class bj_imagesAlbum_FullScreenImageAdapter extends PagerAdapter {
 
                 }else {
                     // image not found and not thumbnails so show error image
-                    MyView.imageView.setImageResource(R.drawable.no_images_available);
+                    MyView.touchImageView.setImageResource(R.drawable.no_images_available);
                 }
             }
         }catch (Exception e){
-            MyView.imageView.setImageResource(R.drawable.no_images_available);
+            MyView.touchImageView.setImageResource(R.drawable.no_images_available);
         }
     }
     public void setProgress(final LoadableImageview MyView, final int position) {
@@ -369,142 +402,7 @@ public class bj_imagesAlbum_FullScreenImageAdapter extends PagerAdapter {
     }
 
 
-    public interface OnLoadOrginalRequestListener{
-        void OnRequestOrginal(LoadableImageview RowViewGroup, bj_imageNotice imageNotice,final int position);
-        void OnRequestOrginalCancel(LoadableImageview RowViewGroup, bj_imageNotice imageNotice,final int position);
-    }
-    public interface OnUploadingImageListener{
-        void OnUploading(final LoadableImageview RowViewGroup,final bj_imageNotice imageNotice,final int position);
-        void OnUploadingCancel(final LoadableImageview RowViewGroup,final  bj_imageNotice imageNotice,final int position);
-
-    }
-    public interface OnLoadThumbRequestListener{
-        public void OnRequestThumb(LoadableImageview RowViewGroup, bj_imageNotice imageNotice,final int position);
-    }
-
-    public class LoadableImageview extends LinearLayout {
-        FrameLayout FL_Base;
-        private ProgressBar Progressbar;
-        private ImageView ProgressbarButton;
-        public imagesView_TouchImageView imageView;
-        public TextView TextViewForImageNotice;
-        private String vNotice;
-
-        public LoadableImageview(Context context,String notice) {
-            super(context);
-            vNotice=notice;
-            setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            setPadding(0,0,0,0);
-            setOrientation(LinearLayout.VERTICAL);
-
-            FL_Base=new FrameLayout(context);
-            FL_Base.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            FL_Base.setPadding(0,0,0,0);
-
-            TextViewForImageNotice=new TextView( getContext());
-            TextViewForImageNotice.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                TextViewForImageNotice.setTextAppearance(R.style.TextAppearance_Compat_Notification);
-            }
-            TextViewForImageNotice.setBackgroundColor(getContext().getResources().getColor(R.color.black_overlay));
-            TextViewForImageNotice.setTextColor(getContext().getResources().getColor(R.color.white_overlay));
-            TextViewForImageNotice.setPadding(2,2,2,10);
-            TextViewForImageNotice.setText(vNotice);
-            TextViewForImageNotice.setGravity(Gravity.BOTTOM);
-
-            if (vNotice==null || vNotice.equals("")) {
-                TextViewForImageNotice.setVisibility(GONE);
-            }else {
-                TextViewForImageNotice.setVisibility(VISIBLE);
-            }
-
-            imageView=new imagesView_TouchImageView(context);
-            imageView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
 
 
-            //set progress downloading
-            Progressbar =new ProgressBar(context,null,android.R.attr.progressBarStyleHorizontal);
-            Progressbar.setLayoutParams(new LayoutParams(bj_image.getpixels(context,70), bj_image.getpixels(context,70)));
-            Progressbar.setMax(100);
-            Progressbar.setIndeterminate(false);
-            Progressbar.setProgressDrawable(getResources().getDrawable(R.drawable.circle_progress_uncomplete));
-
-
-            Progressbar.setVisibility(GONE);
-
-
-            //set ButtonForDownloading
-            ProgressbarButton =new ImageView(context,null,android.R.attr.progressBarStyle);
-            ProgressbarButton.setLayoutParams(new LayoutParams(bj_image.getpixels(context, 50), bj_image.getpixels(context, 50)));
-            ProgressbarButton.setClickable(true);
-            ProgressbarButton.setImageResource(R.drawable.icon_download);
-
-            ProgressbarButton.setVisibility(GONE);
-            ProgressbarButton.setVisibility(GONE);
-
-            FL_Base.addView(imageView);
-            FL_Base.addView(Progressbar);
-
-            FL_Base.addView(ProgressbarButton);
-
-            FL_Base.addView(TextViewForImageNotice);
-            addView(FL_Base);
-
-            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) TextViewForImageNotice.getLayoutParams();
-            params.gravity = Gravity.BOTTOM;
-            TextViewForImageNotice.setLayoutParams(params);
-
-            params = (FrameLayout.LayoutParams) Progressbar.getLayoutParams();
-            params.gravity = Gravity.CENTER;
-            Progressbar.setLayoutParams(params);
-
-
-            params = (FrameLayout.LayoutParams) ProgressbarButton.getLayoutParams();
-            params.gravity = Gravity.CENTER;
-            ProgressbarButton.setLayoutParams(params);
-
-        }
-        public void SetProgresOn(boolean indeterminate, int percent,boolean cancelable){
-            //Log.i("LoadableImageview", "SetProgresOn: "+vNotice+" indeterminate: "+indeterminate+" cancelable: "+cancelable+" " +percent + " %");
-            Progressbar.setIndeterminate(indeterminate);
-            Progressbar.setProgress(percent);
-            Progressbar.setVisibility(VISIBLE);
-            if (cancelable) {
-                ProgressbarButton.setVisibility(VISIBLE);
-            }else {
-                ProgressbarButton.setVisibility(GONE);
-            }
-
-
-        }
-        public void SetProgresOff(@bj_imageNotice.progressKinds int progressKind,boolean completed){
-            //Log.i("LoadableImageview", "SetProgresOff: "+vNotice+" progressKind: "+progressKind+" completed: "  + completed);
-            if (completed  ){
-                if (progressKind==bj_imageNotice.progressKinds.downloadThumnails){
-                    Progressbar.setVisibility(GONE);
-                    ProgressbarButton.setVisibility(VISIBLE);
-                    ProgressbarButton.setImageResource(R.drawable.icon_download);
-
-                }else {
-                    Progressbar.setVisibility(GONE);
-                    ProgressbarButton.setVisibility(GONE);
-                }
-
-            }else {
-                if (progressKind== bj_imageNotice.progressKinds.downloadThumnails){
-                    ProgressbarButton.setImageResource(R.drawable.icon_download);
-                }if (progressKind== bj_imageNotice.progressKinds.downloadOrginalImage){
-                    ProgressbarButton.setImageResource(R.drawable.icon_download);
-                }if (progressKind== bj_imageNotice.progressKinds.upload){
-                    ProgressbarButton.setImageResource(R.drawable.icon_upload);
-                }
-                Progressbar.setVisibility(GONE);
-                ProgressbarButton.setVisibility(VISIBLE);
-            }
-
-
-        }
-
-    }
 }

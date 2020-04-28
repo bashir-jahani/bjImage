@@ -1,136 +1,133 @@
 package bj.modules.bj_image;
-
-
+        import android.app.Activity;
         import android.content.Context;
-        import android.graphics.Bitmap;
-        import android.graphics.BitmapFactory;
         import android.view.View;
-        import android.view.View.OnClickListener;
         import android.view.ViewGroup;
         import android.widget.BaseAdapter;
-        import android.widget.ImageView;
-
-        import androidx.appcompat.app.AppCompatActivity;
-
+        import android.widget.CompoundButton;
         import com.bumptech.glide.Glide;
-
-        import java.io.File;
-        import java.io.FileInputStream;
-        import java.io.FileNotFoundException;
         import java.util.ArrayList;
 
-        import static bj.modules.bj_image_classes.fragmentOpen;
+        import bj.modules.bj_image_classes;
+
+public class bj_imagesAlbum_GridViewImageAdapter extends BaseAdapter {
+    /** The context. */
+    private ArrayList<bj_imageNotice> _imagesPath;
+    private Context context;
+    bj_image_classes.OnImageClickListener onImageClickListener;
+    @bj_image_classes.FileNotice int fileNoticeForShow;
+    private bj_image_classes.OnImageSelectListener onImageSelectListener;
 
 
-/**
- * Created by Bashir jahani on 1/24/2018.
- */
+    public bj_imagesAlbum_GridViewImageAdapter(Context context, ArrayList<bj_imageNotice> images, @bj_image_classes.FileNotice int fileNoticeForShow, bj_image_classes.OnImageClickListener onImageClickListener) {
+        this.context = context;
+        if (images!=null) {
+            this._imagesPath = images;
+        }else {
+            this._imagesPath =bj_image. getAllShownImagesPath((Activity) context);
 
-class bj_imagesAlbum_GridViewImageAdapter extends BaseAdapter {
-    private AppCompatActivity _activity;
+        }
 
-    private ArrayList<bj_imageNotice> _filePaths ;
-    private int imageWidth;
-    Boolean CanAdd,CanDel;
+        this.onImageClickListener=onImageClickListener;
+        this.fileNoticeForShow=fileNoticeForShow;
 
-    public bj_imagesAlbum_GridViewImageAdapter(AppCompatActivity activity, ArrayList<bj_imageNotice> filePaths,
-                                              int imageWidth, Boolean CanAdd, Boolean CanDel) {
-        this._activity = activity;
-        this._filePaths = filePaths;
-
-        this.imageWidth = imageWidth;
-        this.CanAdd=CanAdd;
-        this.CanDel=CanDel;
+    }
+    public void SetOnImageSelectListener(bj_image_classes.OnImageSelectListener listener) {
+       this. onImageSelectListener=listener;
     }
 
 
-    @Override
     public int getCount() {
-
-        return this._filePaths.size();
+        return _imagesPath.size();
     }
 
-    @Override
     public Object getItem(int position) {
-        return this._filePaths.get(position);
+        return position;
     }
 
-    @Override
     public long getItemId(int position) {
         return position;
     }
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ImageView imageView;
-        if (convertView == null) {
-            imageView = new ImageView(_activity);
-        } else {
-            imageView = (ImageView) convertView;
+    public View getView(final int position, final View convertView, ViewGroup parent) {
+        LoadableImageview MyView;
+
+        String imageNotice=null;
+        switch (fileNoticeForShow){
+            case bj_image_classes.FileNotice
+                    .ALBUME_NAME:
+                imageNotice= _imagesPath.get(position).ImageName;
+            case bj_image_classes.FileNotice
+                    .NAME:
+                imageNotice= _imagesPath.get(position).ImageAlbume;
+            case bj_image_classes.FileNotice
+                    .ALBUME_NAME_FILE_NAME:
+                imageNotice= _imagesPath.get(position).ImageAlbume+"/"+ _imagesPath.get(position).ImageName;;
+            case bj_image_classes.FileNotice
+                    .DATE_TAKEN:
+                imageNotice= _imagesPath.get(position).GetDateTakenString();
+            case bj_image_classes.FileNotice
+                    .SIZE:
+                long fSize= _imagesPath.get(position).ImageSize;
+                String fSizeK=" Byte";
+
+
+                if (fSize>1024){
+                    fSize=fSize/1024;
+                    fSizeK=" KByte";
+                }
+                if (fSize>1024){
+                    fSize=fSize/1024;
+                    fSizeK=" MByte";
+                }
+                if (fSize>1024){
+                    fSize=fSize/1024;
+                    fSizeK=" GByte";
+                }
+                if (fSize>1024){
+                    fSize=fSize/1024;
+                    fSizeK=" TByte";
+                }
+                imageNotice=fSize+fSizeK;
         }
 
-        //imageView=(ImageView) parent.findViewById(R.id.GIAPI_imageView);
-        /* get screen dimensions
-        Bitmap image = decodeFile(_filePaths.get(position), imageWidth,
-                imageWidth);
 
-        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        imageView.setLayoutParams(new GridView.LayoutParams(imageWidth,
-                imageWidth));
-        //imageView.setImageBitmap(image);
-        */
-        imageView.setScaleType(ImageView.ScaleType.FIT_END);
-        Glide.with(_activity).load(_filePaths.get(position)).thumbnail((float) .05).into(imageView);
+        MyView = new LoadableImageview(context, imageNotice, _imagesPath.get(position).selected, new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if ( onImageSelectListener!=null){
+                    onImageSelectListener.onSelectionChanged(compoundButton,b,position, _imagesPath.get(position));
+                }else {
+                    _imagesPath.get(position).selected = b;
+                }
 
-        // image view click listener
-        imageView.setOnClickListener(new OnImageClickListener(position,parent));
+            }
+        });
 
-        return imageView;
+        Glide.with(context).load(_imagesPath.get(position).GetImagePath()).placeholder(R.drawable.loading).into(MyView.imageView);
+        if (onImageClickListener!=null){
+            MyView.imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onImageClickListener.onClick(v,position, _imagesPath.get(position));
+                }
+            });
+        }
+
+
+        return MyView;
+    }
+    private bj_loadable_image_listeners.OnLoadOrginalRequestListener mOnLoadOrginalRequestListener;
+    private bj_loadable_image_listeners.OnLoadThumbRequestListener mOnLoadThumbRequestListener;
+    private bj_loadable_image_listeners.OnUploadingImageListener mOnUploadingImageListener;
+    public void SetOnLoadThumbRequestListener(bj_loadable_image_listeners.OnLoadThumbRequestListener listener){
+        mOnLoadThumbRequestListener=listener;
+    }
+    public void SetOnLoadOrginalRequestListener(bj_loadable_image_listeners.OnLoadOrginalRequestListener listener){
+        mOnLoadOrginalRequestListener=listener;
+    }
+    public void SetOnUploadingImageListener(bj_loadable_image_listeners.OnUploadingImageListener listener){
+        mOnUploadingImageListener=listener;
     }
 
-    class OnImageClickListener implements OnClickListener {
-
-        int _postion;
-        ViewGroup _parent;
-        // constructor
-        public OnImageClickListener(int position, ViewGroup parent) {
-            this._postion = position;
-        }
-
-        @Override
-        public void onClick(View v) {
-            // on selecting grid view image
-            // launch full screen activity
-            fragmentOpen(  _activity.getSupportFragmentManager(),new bj_imagesAlbumFullScreenFragment( _postion,false,_filePaths,CanAdd,CanDel),true, bj_imagesAlbum_AppConstant.FragmentContainerID);
-            //Intent i = new Intent(_activity, FullScreenViewActivity.class);
-            //i.putExtra("position", _postion);
-            //_activity.startActivity(i);
-            //Toast.makeText(_activity,_postion+ "", Toast.LENGTH_SHORT).show();
-        }
-
-    }
-    public static Bitmap decodeFile(String filePath, int WIDTH, int HIGHT) {
-        try {
-
-            File f = new File(filePath);
-
-            BitmapFactory.Options o = new BitmapFactory.Options();
-            o.inJustDecodeBounds = true;
-            BitmapFactory.decodeStream(new FileInputStream(f), null, o);
-
-            final int REQUIRED_WIDTH = WIDTH;
-            final int REQUIRED_HIGHT = HIGHT;
-            int scale = 1;
-            while (o.outWidth / scale / 2 >= REQUIRED_WIDTH
-                    && o.outHeight / scale / 2 >= REQUIRED_HIGHT)
-                scale *= 2;
-
-            BitmapFactory.Options o2 = new BitmapFactory.Options();
-            o2.inSampleSize = scale;
-            return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 }

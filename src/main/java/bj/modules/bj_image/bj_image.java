@@ -1,5 +1,5 @@
 package bj.modules.bj_image;
-
+import bj.modules.bj_image. bj_loadable_image_listeners.*;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -404,7 +405,7 @@ public class bj_image {
         if(AsFullScreen) {
             fragment = new bj_imagesAlbumFullScreenFragment(position,GotoLast, DirectoryPath, FILE_EXTN,CanAdd,CanDell);
         }else {
-            fragment=new bj_imagesAlbumGridViewFragment(DirectoryPath,FILE_EXTN,CanAdd,CanDell);
+            fragment=new bj_imagesAlbumGridViewFragment(position,GotoLast, DirectoryPath, FILE_EXTN,CanAdd,CanDell);
         }
         return fragment;
     }
@@ -414,32 +415,63 @@ public class bj_image {
         if(AsFullScreen) {
             fragment = new bj_imagesAlbumFullScreenFragment( position,GotoLast, ImagePaths,CanAdd,CanDell);
         }else {
-            fragment=new bj_imagesAlbumGridViewFragment( ImagePaths,CanAdd,CanDell);
+            fragment=new bj_imagesAlbumGridViewFragment( position,GotoLast, ImagePaths,CanAdd,CanDell);
         }
         return fragment;
     }
-    public static Fragment bj_imagesAlbumOpen(Context context, Boolean AsFullScreen, ArrayList<bj_imageNotice> ImagePaths, Boolean GotoLast, Integer position, Boolean CanAdd, Boolean CanDell, bj_imagesAlbum_FullScreenImageAdapter.OnLoadOrginalRequestListener onLoadOrginalRequestListener) {
+    public static Fragment bj_imagesAlbumOpen(Context context, Boolean AsFullScreen, ArrayList<bj_imageNotice> ImagePaths, Boolean GotoLast, Integer position, Boolean CanAdd, Boolean CanDell, OnLoadOrginalRequestListener onLoadOrginalRequestListener) {
 
         Fragment fragment ;
         if(AsFullScreen) {
             fragment = new bj_imagesAlbumFullScreenFragment( position,GotoLast, ImagePaths,onLoadOrginalRequestListener,CanAdd,CanDell);
         }else {
-            fragment=new bj_imagesAlbumGridViewFragment(ImagePaths,CanAdd,CanDell);
+            fragment=new bj_imagesAlbumGridViewFragment(position,GotoLast, ImagePaths,onLoadOrginalRequestListener,CanAdd,CanDell);
         }
         return fragment;
     }
-    public static Fragment bj_imagesAlbumOpen( Boolean AsFullScreen, ArrayList<bj_imageNotice> ImagePaths, Boolean GotoLast, Integer position, Boolean CanAdd, Boolean CanDell, bj_imagesAlbum_FullScreenImageAdapter.OnLoadOrginalRequestListener onLoadOrginalRequestListener, bj_imagesAlbum_FullScreenImageAdapter.OnLoadThumbRequestListener onLoadThumbRequestListener) {
+    public static Fragment bj_imagesAlbumOpen( Boolean AsFullScreen, ArrayList<bj_imageNotice> ImagePaths, Boolean GotoLast, Integer position, Boolean CanAdd, Boolean CanDell, OnLoadOrginalRequestListener onLoadOrginalRequestListener, OnLoadThumbRequestListener onLoadThumbRequestListener) {
 
         Fragment fragment ;
         if(AsFullScreen) {
             fragment = new bj_imagesAlbumFullScreenFragment( position,GotoLast, ImagePaths,onLoadOrginalRequestListener, onLoadThumbRequestListener,CanAdd,CanDell);
         }else {
-            fragment=new bj_imagesAlbumGridViewFragment(ImagePaths,CanAdd,CanDell);
+            fragment=new bj_imagesAlbumGridViewFragment(position,GotoLast, ImagePaths,onLoadOrginalRequestListener, onLoadThumbRequestListener,CanAdd,CanDell);
         }
         return fragment;
     }
 
+    public static ArrayList<bj_imageNotice> getAllShownImagesPath(Activity activity) {
+        Uri uri;
+        Cursor cursor;
+        int column_index_data, column_index_folder_name, column_index_name,column_index_date_taken,column_index_size;
+        ArrayList<bj_imageNotice> listOfAllImages = new ArrayList<bj_imageNotice>();
+        bj_imageNotice image = null;
+        uri = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
+        String[] projection = { MediaStore.MediaColumns.DATA,MediaStore.Images.Media.DISPLAY_NAME,
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,MediaStore.Images.Media.DATE_TAKEN,MediaStore.Images.Media.SIZE };
+
+        cursor = activity.getContentResolver().query(uri, projection, null,
+                null, null);
+
+        column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        column_index_folder_name = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+        column_index_name = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME);
+        column_index_date_taken = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN);
+        column_index_size = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.SIZE);
+        while (cursor.moveToNext()) {
+            image = new bj_imageNotice();
+            image.SetImagePath(cursor.getString(column_index_data),false,false);
+            image.SetDateTaken(cursor.getLong(column_index_date_taken));
+            image.ImageName=cursor.getString(column_index_name);
+            image.ImageSize=cursor.getLong(column_index_size);
+            image.ImageAlbume=cursor.getString(column_index_folder_name);
+
+            listOfAllImages.add(image);
+        }
+
+        return listOfAllImages;
+    }
     public static Bitmap drawOctagonShapedBitmap(Context context,Bitmap src, Integer pixels) {
 
         Bitmap output = Bitmap.createBitmap(src.getWidth(), src
@@ -699,9 +731,9 @@ public class bj_image {
                 //Log.e("bj modules","Load_PictureTo_ImageView :Mybitmap <> null" );
                 try {
                     if (placeholderImageDrawableResource==-1) {
-                        Glide.with(ImageViewForShow.getContext()).load(BitmapToByte(Mybitmap)).into(ImageViewForShow);
+                        Glide.with(ImageViewForShow.getContext()).load(BitmapToByte(Mybitmap)).placeholder(R.drawable.loading).into(ImageViewForShow);
                     }else {
-                        Glide.with(ImageViewForShow.getContext()).load(BitmapToByte(Mybitmap)).into(ImageViewForShow);
+                        Glide.with(ImageViewForShow.getContext()).load(BitmapToByte(Mybitmap)).placeholder(R.drawable.loading).into(ImageViewForShow);
                     }
 
                     //ImageViewForShow.setImageBitmap(Mybitmap);
@@ -709,7 +741,7 @@ public class bj_image {
                 }catch (Exception e){
                     try{
                         //Log.e("bj modules","Load_PictureTo_ImageView : Load errorImageDrawableResource after cant Load MyBitmap"+ "\n"+ e.getMessage() );
-                        Glide.with(ImageViewForShow.getContext()).load(errorImageDrawableResource).into(ImageViewForShow);
+                        Glide.with(ImageViewForShow.getContext()).load(errorImageDrawableResource).placeholder(R.drawable.loading).into(ImageViewForShow);
                         //ImageViewForShow.setImageResource(errorImageDrawableResource);
                     }catch (Exception e1){
                         Log.e("bj modules","Load_PictureTo_ImageView : Cant Load errorImageDrawableResource"+ "\n"+ e1.getMessage());
@@ -719,7 +751,7 @@ public class bj_image {
             }else {
                 try{
                     //Log.e("bj modules","Load_PictureTo_ImageView : Load errorImageDrawableResource" );
-                    Glide.with(ImageViewForShow.getContext()).load(errorImageDrawableResource).into(ImageViewForShow);
+                    Glide.with(ImageViewForShow.getContext()).load(errorImageDrawableResource).placeholder(R.drawable.loading).into(ImageViewForShow);
                 }catch (Exception e1){
                     Log.e("bj modules","error :Load_PictureTo_ImageView : cant Load errorImageDrawableResource" + "\n"+ e1.getMessage());
                 }
@@ -738,13 +770,13 @@ public class bj_image {
         if(Mybitmap!=null) {
             try {
                 if (placeholderImageDrawableResource==-1) {
-                    Glide.with(ImageViewForShow.getContext()).load(BitmapToByte(Mybitmap)).into(ImageViewForShow);
+                    Glide.with(ImageViewForShow.getContext()).load(BitmapToByte(Mybitmap)).placeholder(R.drawable.loading).into(ImageViewForShow);
                 }else {
-                    Glide.with(ImageViewForShow.getContext()).load(BitmapToByte(Mybitmap)).into(ImageViewForShow);
+                    Glide.with(ImageViewForShow.getContext()).load(BitmapToByte(Mybitmap)).placeholder(R.drawable.loading).into(ImageViewForShow);
                 }
             }catch (Exception e){
                 try{
-                    Glide.with(ImageViewForShow.getContext()).load(errorImageDrawableResource).into(ImageViewForShow);
+                    Glide.with(ImageViewForShow.getContext()).load(errorImageDrawableResource).placeholder(R.drawable.loading).into(ImageViewForShow);
                     //ImageViewForShow.setImageResource(errorImageDrawableResource);
                 }catch (Exception e1){
 
@@ -753,7 +785,7 @@ public class bj_image {
             }
         }else {
             try{
-                Glide.with(ImageViewForShow.getContext()).load(errorImageDrawableResource).into(ImageViewForShow);
+                Glide.with(ImageViewForShow.getContext()).load(errorImageDrawableResource).placeholder(R.drawable.loading).into(ImageViewForShow);
             }catch (Exception e1){
 
             }

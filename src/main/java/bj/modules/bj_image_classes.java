@@ -1,13 +1,32 @@
 package bj.modules;
 
 import android.util.Log;
+import android.view.View;
+import android.widget.CompoundButton;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import bj.modules.bj_image.bj_imageNotice;
+
 public class bj_image_classes {
+	public  @interface FileNotice {
+		int NAME=0;
+		int ALBUME_NAME=1;
+		int ALBUME_NAME_FILE_NAME=2;
+		int DATE_TAKEN=3;
+		int SIZE=4;
+
+
+	}
+	public interface OnImageClickListener {
+		void onClick(View view,int index, bj_imageNotice imageNotice);
+	}
+	public interface OnImageSelectListener {
+		void onSelectionChanged( CompoundButton buttonView, boolean isSelect,int index,bj_imageNotice imageNotice);
+	}
 	public static class BJRequestCodes {
 		public static final int  REQUEST_CODE_Default=-1;
 		public static final int  REQUEST_CODE_Delete=0;
@@ -61,6 +80,32 @@ public class bj_image_classes {
 			}else {
 				fragmentTransaction.replace(SendContainerViewID,fragment ,fragment.getClass().getName())
 						.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+						.commit();
+			}
+			//android.R.id.content
+		}
+	}
+	public static void fragmentOpen(android.app.FragmentManager fragmentManager, android.app.Fragment fragment, Boolean InBack, Integer  SendContainerViewID){
+
+		android.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		if (InBack) {
+			if(fragmentManager.findFragmentByTag(fragment.getClass().getName())!=null) {
+				fragmentManager.popBackStack(fragment.getClass().getName(),0);
+			}else {
+				fragmentTransaction.replace(SendContainerViewID, fragment,fragment.getClass().getName())
+						.addToBackStack(fragment.getClass().getName())
+						.setTransition(android.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+						.commit();
+			}
+
+
+		}else {
+
+			if(fragmentManager.findFragmentByTag(fragment.getClass().getName())!=null) {
+				fragmentManager.popBackStack(fragment.getClass().getName(),0);
+			}else {
+				fragmentTransaction.replace(SendContainerViewID,fragment ,fragment.getClass().getName())
+						.setTransition(android.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
 						.commit();
 			}
 			//android.R.id.content

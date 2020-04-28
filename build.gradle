@@ -37,4 +37,6 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation project(path: ':bjPermission')
     implementation project(path: ':bjMessageBox')
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
 }

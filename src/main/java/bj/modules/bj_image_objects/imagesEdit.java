@@ -115,7 +115,7 @@ public class imagesEdit extends AppCompatActivity {
         seekbar_CaptionSpaceSize=(SeekBar) findViewById(R.id.GIE_SeekBarCaptionSpaceSize);
 
         //Load Image
-        Glide.with(imagesEdit.this).load(ImageUri).into(MyIMGV);
+        Glide.with(imagesEdit.this).load(ImageUri).placeholder(R.drawable.loading).into(MyIMGV);
 
         //Generate BitMap
         InputStream in = null;

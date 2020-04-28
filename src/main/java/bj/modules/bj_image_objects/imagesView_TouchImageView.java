@@ -67,7 +67,7 @@ public class imagesView_TouchImageView extends ImageView {
     }
     public void SetImage(String ImagePath){
         if (GetFileExtension(ImagePath).toLowerCase().equals("gif")) {
-            Glide.with(getContext()).load(ImagePath).into(imagesView_TouchImageView.this);
+            Glide.with(getContext()).load(ImagePath).placeholder(R.drawable.loading).into(imagesView_TouchImageView.this);
         }else {
             Bitmap src=null;
             src= BitmapFactory.decodeFile(ImagePath);
@@ -75,7 +75,7 @@ public class imagesView_TouchImageView extends ImageView {
         }
     }
     public void SetImage(@DrawableRes int resourceID){
-        Glide.with(getContext()).load(context.getResources().getDrawable(resourceID)).into(imagesView_TouchImageView.this);
+        Glide.with(getContext()).load(context.getResources().getDrawable(resourceID)).placeholder(R.drawable.loading).into(imagesView_TouchImageView.this);
 
     }
     public void SetImageAsCircle(@DrawableRes int resourceID, Integer CournerRadius, @ColorRes int BorderColor, int BorderSize, @ColorRes int ShadowColor, Integer ShadowSize, Boolean CenterShadow, Boolean InversShadow, @ColorRes int SecondBorderColor, int SecondBorderSiz, int ResizeImageWidth, @DrawableRes int  errorImageDrawableResource, @DrawableRes int  placeholderImageDrawableResource){

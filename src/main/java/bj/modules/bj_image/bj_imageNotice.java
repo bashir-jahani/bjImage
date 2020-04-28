@@ -9,10 +9,12 @@ import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import bj.modules.bj_file;
 
-public class bj_imageNotice {
+public class bj_imageNotice   {
 	private String TAG="bj_imageNotice";
 	private OnProgressListener mOnProgressListener;
 	public bj_imageNotice() {
@@ -25,17 +27,37 @@ public class bj_imageNotice {
 		ImageName = imageName;
 		ImageSize = imageSize;
 	}
-
+	private String date_taken_string;
+	private long date_taken;
 	private String ImagePath;
 	private Boolean IsThumb;
 	private Boolean NeedUpload;
 	private int progres=0;
 	private int progresKind=0;
 	public String ImageName;
+	public String ImageAlbume;
 	public long ImageSize;
 	public boolean IsUploading;
 	public boolean IsDownloadingOriginal;
 	public boolean IsDownloadingThumbnails;
+	public boolean selected=false;
+	public void SetDateTakenString(String date){
+		date_taken=Date.parse(date);
+		date_taken_string=date;
+	}
+	public String GetDateTakenString(){
+		return date_taken_string;
+	}
+	public void SetDateTaken(long date){
+
+		Date mdate=new Date(date);
+		SimpleDateFormat df2 = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+		date_taken_string= df2.format(mdate);
+		date_taken=date;
+	}
+	public long GetDateTaken(){
+		return date_taken;
+	}
 	public String GetImagePath(){
 		return ImagePath;
 	}
@@ -52,13 +74,13 @@ public class bj_imageNotice {
 		IsThumb=isThumb;
 		if (mOnProgressListener!=null)
 			mOnProgressListener.OnImagePathSet(newImagePath,isThumb,needUpload);
-		Log.i(TAG, "SetImagePath: exists "+ImageExists()+System.lineSeparator()+ImagePath);
+		//Log.i(TAG, "SetImagePath: exists "+ImageExists()+System.lineSeparator()+ImagePath);
 	}
 	public void SetProgresOn(@progressKinds int progressKind, int percent){
 		boolean  indtmnt=false,cnclbl=true;
 		this.progresKind=progressKind;
 		this.progres=percent;
-		Log.i(TAG, "SetProgresOn: "+ImageName+" " +percent + " %");
+		//Log.i(TAG, "SetProgresOn: "+ImageName+" " +percent + " %");
 		if (progressKind==progressKinds.downloadThumnails){
 			IsThumb=true;
 			IsDownloadingOriginal =true;
@@ -95,7 +117,7 @@ public class bj_imageNotice {
 		}
 		this.progres=0;
 		this.progresKind=0;
-		Log.i(TAG, "SetProgresOff: "+ImageName+" complete: " +complete);
+		//Log.i(TAG, "SetProgresOff: "+ImageName+" complete: " +complete);
 		if (mOnProgressListener!=null)
 			mOnProgressListener.OnProgressOff(progresKind,complete);
 	}
@@ -112,6 +134,10 @@ public class bj_imageNotice {
 	public File imageFile(){
 		return new File(GetImagePath());
 	}
+
+
+
+
 
 	public interface OnProgressListener{
 		void OnProgressOn(boolean indeterminate, int percent,boolean cancelable);
