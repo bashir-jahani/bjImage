@@ -152,17 +152,17 @@ public class bj_image {
                 //startActivityForResult(intent, BJRequestCodes.REQUEST_CODE_FILE_FROM_CAMERA);
                 return;
             }
-            if (SelectedItem.ID== BJRequestCodes.REQUEST_CODE_FILE_FROM_CONTENT){
+            if (SelectedItem.ID== BJRequestCodes.REQUEST_CODE_FILE_FROM_CONTENT_IMAGE){
                 Intent intent= new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
-                startActivityForResult((Activity)context, intent, BJRequestCodes.REQUEST_CODE_FILE_FROM_CONTENT,null);
+                startActivityForResult((Activity)context, intent, BJRequestCodes.REQUEST_CODE_FILE_FROM_CONTENT_IMAGE,null);
                 return;
             }
-            if (SelectedItem.ID== BJRequestCodes.REQUEST_CODE_FILE_FROM_GALERY){
+            if (SelectedItem.ID== BJRequestCodes.REQUEST_CODE_FILE_FROM_GALERY_IMAGE){
                 Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
-                startActivityForResult((Activity)context,pickPhoto, BJRequestCodes.REQUEST_CODE_FILE_FROM_GALERY,null);
+                startActivityForResult((Activity)context,pickPhoto, BJRequestCodes.REQUEST_CODE_FILE_FROM_GALERY_IMAGE,null);
             }
         }
         public static void SelectImageMethodeDialog(String title, final Context context, boolean useCamera) {
@@ -191,8 +191,8 @@ public class bj_image {
 
 
                 final BJAlertDialog.BJAlertDialogItem[] items = {
-                        new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_GALERY, context.getString(R.string.from_gallery), android.R.drawable.ic_menu_gallery),
-                        new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_CONTENT, context.getString(R.string.from_content), android.R.drawable.ic_menu_more),
+                        new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_GALERY_IMAGE, context.getString(R.string.from_gallery), android.R.drawable.ic_menu_gallery),
+                        new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_CONTENT_IMAGE, context.getString(R.string.from_content), android.R.drawable.ic_menu_more),
                         new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_CAMERA, context.getString(R.string.from_camera), android.R.drawable.ic_menu_camera),
 
 
@@ -212,8 +212,8 @@ public class bj_image {
                 GAD.show();
             }else {
                 final BJAlertDialog.BJAlertDialogItem[] items = {
-                        new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_GALERY, context.getString(R.string.from_gallery), android.R.drawable.ic_menu_gallery),
-                        new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_CONTENT, context.getString(R.string.from_content), android.R.drawable.ic_menu_more),
+                        new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_GALERY_IMAGE, context.getString(R.string.from_gallery), android.R.drawable.ic_menu_gallery),
+                        new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_CONTENT_IMAGE, context.getString(R.string.from_content), android.R.drawable.ic_menu_more),
                         //new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_CAMERA, context.getString(R.string.from_camera), android.R.drawable.ic_menu_camera),
 
 

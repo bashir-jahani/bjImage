@@ -34,12 +34,17 @@ public class bj_image_classes {
 		public static final int  REQUEST_CODE_Share=2;
 		public static final int  REQUEST_CODE_Save_TO_CONTEN=3;
 		public static final int  REQUEST_CODE_Save_TO_GALERY=4;
-		public static final int  REQUEST_CODE_FILE_FROM_CONTENT=5;
-		public static final int  REQUEST_CODE_FILE_FROM_GALERY=6;
+		public static final int REQUEST_CODE_FILE_FROM_CONTENT_IMAGE =5;
+		public static final int REQUEST_CODE_FILE_FROM_GALERY_IMAGE =6;
 		public static final int  REQUEST_CODE_FILE_FROM_CAMERA=7;
 		public static final int  REQUEST_CODE_DIRECTORY_SELECT=8;
 		public static final int  REQUEST_CODE_ImageFromEditImage=9;
 
+		public static final int REQUEST_CODE_FILE_FROM_GALERY_VIDEO =10 ;
+		public static final int REQUEST_CODE_FILE_FROM_CONTENT_FILE = 11;
+		public static final int REQUEST_CODE_FILE_FROM_CONTENT_MUSIC = 12;
+		public static final int REQUEST_CODE_PERSON_CONTACT =13 ;
+		public static final int REQUEST_CODE_LOCATION_GET =14 ;
 	}
 	public static void FragmentpopBackStackTillEntry(@Nullable FragmentManager fragmentManager, int entryIndex) {
 
