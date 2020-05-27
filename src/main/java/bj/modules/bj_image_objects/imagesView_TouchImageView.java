@@ -34,6 +34,7 @@ import static bj.modules.bj_file.GetFileExtension;
  */
 
 public class imagesView_TouchImageView extends ImageView {
+    private final static boolean showInfo=false;
     Matrix matrix;
     Context mContext;
     // We can be in one of these 3 states
@@ -248,18 +249,15 @@ public class imagesView_TouchImageView extends ImageView {
             if (saveScale > maxScale) {
                 saveScale = maxScale;
                 mScaleFactor = maxScale / origScale;
-                //Log.d("GGGG", "1");
             } else if (saveScale < minScale) {
                 saveScale = minScale;
                 mScaleFactor = minScale / origScale;
-                //Log.d("GGGG", "2");
             }
 
             if (origWidth * saveScale <= viewWidth
                     || origHeight * saveScale <= viewHeight) {
                 matrix.postScale(mScaleFactor, mScaleFactor, viewWidth / 2,
                         viewHeight / 2);
-                //Log.d("GGGG","3");
 
             }else {
 
@@ -335,7 +333,7 @@ public class imagesView_TouchImageView extends ImageView {
             int bmWidth = drawable.getIntrinsicWidth();
             int bmHeight = drawable.getIntrinsicHeight();
 
-            Log.d("bmSize", "bmWidth: " + bmWidth + " bmHeight : " + bmHeight);
+          if (showInfo)  Log.i("bmSize", "bmWidth: " + bmWidth + " bmHeight : " + bmHeight);
 
             float scaleX = (float) viewWidth / (float) bmWidth;
             float scaleY = (float) viewHeight / (float) bmHeight;
@@ -372,7 +370,7 @@ public class imagesView_TouchImageView extends ImageView {
         int bmWidth = drawable.getIntrinsicWidth();
         int bmHeight = drawable.getIntrinsicHeight();
 
-        Log.d("bmSize", "bmWidth: " + bmWidth + " bmHeight : " + bmHeight);
+        if (showInfo)  Log.i("bmSize", "bmWidth: " + bmWidth + " bmHeight : " + bmHeight);
 
         float scaleX = (float) viewWidth / (float) bmWidth;
         float scaleY = (float) viewHeight / (float) bmHeight;
@@ -425,7 +423,7 @@ public class imagesView_TouchImageView extends ImageView {
         int bmWidth = drawable.getIntrinsicWidth();
         int bmHeight = drawable.getIntrinsicHeight();
 
-        Log.d("bmSize", "bmWidth: " + bmWidth + " bmHeight : " + bmHeight);
+        if (showInfo)  Log.i("bmSize", "bmWidth: " + bmWidth + " bmHeight : " + bmHeight);
 
         float scaleX = (float) viewWidth / (float) bmWidth;
         float scaleY = (float) viewHeight / (float) bmHeight;

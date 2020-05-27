@@ -57,15 +57,19 @@ public class bj_imagesAlbum_GridViewImageAdapter extends BaseAdapter {
             case bj_image_classes.FileNotice
                     .ALBUME_NAME:
                 imageNotice= _imagesPath.get(position).ImageName;
+                break;
             case bj_image_classes.FileNotice
                     .NAME:
                 imageNotice= _imagesPath.get(position).ImageAlbume;
+                break;
             case bj_image_classes.FileNotice
                     .ALBUME_NAME_FILE_NAME:
-                imageNotice= _imagesPath.get(position).ImageAlbume+"/"+ _imagesPath.get(position).ImageName;;
+                imageNotice= _imagesPath.get(position).ImageAlbume+"/"+ _imagesPath.get(position).ImageName;
+                break;
             case bj_image_classes.FileNotice
                     .DATE_TAKEN:
                 imageNotice= _imagesPath.get(position).GetDateTakenString();
+                break;
             case bj_image_classes.FileNotice
                     .SIZE:
                 long fSize= _imagesPath.get(position).ImageSize;
@@ -89,6 +93,7 @@ public class bj_imagesAlbum_GridViewImageAdapter extends BaseAdapter {
                     fSizeK=" TByte";
                 }
                 imageNotice=fSize+fSizeK;
+                break;
         }
 
 

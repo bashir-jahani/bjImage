@@ -475,7 +475,7 @@ public class bj_imagesAlbumFullScreenFragment extends Fragment {
     }
     private void BTNProcesShare(){
         File shareFile=new File(GetImageCurrentPath());
-        Uri uri=FileProvider.getUriForFile(getContext(),getContext().getApplicationInfo().packageName,shareFile);
+        Uri uri=bj_file.uriUtil.uriFromFile(getContext(),shareFile);
         if(mOnShareImageRequest!=null){
             mOnShareImageRequest.OnShareImage(shareFile,uri);
         }
@@ -511,7 +511,7 @@ public class bj_imagesAlbumFullScreenFragment extends Fragment {
         mPager.setCurrentItem(mPosition);
         TXVImageNumber.setText(GetFilesNumber()+"");
         TXVImageIndex.setText(GetImageCurrentNumber()+"");
-        Log.d("BJFile","Count="+mPagerAdapter.getCount());
+
         TXVFileName.setText(GetImageCurrentName());
         //Toast.makeText(getContext(), mPosition + "/"+ GetFilesIndex(), Toast.LENGTH_SHORT).show();
         if (mOnImageChangedListener!=null){

@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import bj.modules.bj_path_files;
+import bj.modules.bj_file_path;
 
 
 /**
@@ -43,7 +43,7 @@ public class bj_imagesAlbum_Utils {
         // check for directory
         if (directory.isDirectory()) {
             // getting list of file paths
-            FilenameFilter only=new bj_path_files.OnlyExt(_FILE_EXTN);
+            FilenameFilter only=new bj_file_path.OnlyExt(_FILE_EXTN);
             String files[]= directory.list(only);
 
             //Toast.makeText(_context, DirectoryPath + File.separator+ files[0], Toast.LENGTH_SHORT).show();

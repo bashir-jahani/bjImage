@@ -135,7 +135,11 @@ public class bj_imageNotice   {
 		return new File(GetImagePath());
 	}
 
-
+	public Uri imageUri(Context context){
+		Uri uri;
+		uri=bj_file.uriUtil.uriFromFile(context,imageFile());
+		return uri;
+	}
 
 
 

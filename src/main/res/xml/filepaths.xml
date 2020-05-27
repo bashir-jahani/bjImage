@@ -6,6 +6,9 @@
     -->
 
     <root-path name="root" path="." />
+    <external-files-path name="external_files" path="." />
+    <external-path name="external_files" path="." />
+    <files-path name="files" path="." />
 
     <!--
     <files-path name="my_images" path="/" />

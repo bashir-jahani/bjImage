@@ -71,15 +71,16 @@ import static bj.modules.bj_permission.CheckPermision;
 public class bj_image {
     private static final String TAG="bj_image";
     public static class selectImage{
-        private static File createCameraTemporaryFile(String part, String ext) throws Exception
-        {
+        private static File createCameraTemporaryFile(String part, String ext) throws IOException {
             File tempDir= Environment.getExternalStorageDirectory();
             tempDir=new File(tempDir.getAbsolutePath()+"/.temp/");
             if(!tempDir.exists())
             {
                 tempDir.mkdirs();
             }
-            return File.createTempFile(part, ext, tempDir);
+            File file= null;
+            file = File.createTempFile(part, ext, tempDir);
+            return file;
         }
         public static Uri UriForCameraImage(){
             return mUriForCameraImage;
@@ -88,7 +89,7 @@ public class bj_image {
         public static Uri ImageUriFromGalleryAndContent(Intent data){
             return data.getData();
         }
-        public static Uri ImageUriFromCamera(Intent data){
+        public static Uri ImageUriFromCamera(Context context, Intent data){
             Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
@@ -108,9 +109,9 @@ public class bj_image {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-          return Uri.fromFile(destination);
+          return bj_file.uriUtil.uriFromFile(context, destination);
         }
-        public static Uri ImageUriFromCamera(Intent data,String ImagePath){
+        public static Uri ImageUriFromCamera(Context context, Intent data,String ImagePath){
             Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
@@ -129,7 +130,7 @@ public class bj_image {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return Uri.fromFile(destination);
+            return bj_file.uriUtil.uriFromFile(context, destination);
         }
         static BJAlertDialog GAD;
         private static void UserSelectAction(Context context, BJAlertDialog.BJAlertDialogItem SelectedItem){
@@ -168,72 +169,52 @@ public class bj_image {
         public static void SelectImageMethodeDialog(String title, final Context context, boolean useCamera) {
             StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
             StrictMode.setVmPolicy(builder.build());
-
+            Log.i(TAG, "SelectImageMethodeDialog: useCamera: "+useCamera);
             if (useCamera) {
-                File photo;
-                try
-                {
-                    // place where to store camera taken picture
+                File photo = null;
+                try {
                     photo = createCameraTemporaryFile("picture", ".jpg");
-                    photo.delete();
-
-                    mUriForCameraImage = Uri.fromFile(photo);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                catch(Exception e)
-                {
-                    Log.v(TAG, "Can't create file to take picture!");
-
-                    useCamera= false;
+                if (photo!=null) {
+                    if (photo.exists())
+                            photo.delete();
+                    mUriForCameraImage = bj_file.uriUtil.uriFromFile(context,photo);
+                }else {
+                    useCamera=false;
                 }
-
             }
             if (useCamera) {
-
-
                 final BJAlertDialog.BJAlertDialogItem[] items = {
                         new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_GALERY_IMAGE, context.getString(R.string.from_gallery), android.R.drawable.ic_menu_gallery),
                         new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_CONTENT_IMAGE, context.getString(R.string.from_content), android.R.drawable.ic_menu_more),
                         new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_CAMERA, context.getString(R.string.from_camera), android.R.drawable.ic_menu_camera),
-
-
                         new BJAlertDialog.BJAlertDialogItem(-1, context.getString(R.string.cancel)),//no icon for this one
                 };
                 GAD=new BJAlertDialog(context, title, R.drawable.ic_menu_gallery,
-
                         items, new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         UserSelectAction(context, items[position]);
-
                     }
                 });
-
-
                 GAD.show();
             }else {
                 final BJAlertDialog.BJAlertDialogItem[] items = {
                         new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_GALERY_IMAGE, context.getString(R.string.from_gallery), android.R.drawable.ic_menu_gallery),
                         new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_CONTENT_IMAGE, context.getString(R.string.from_content), android.R.drawable.ic_menu_more),
-                        //new BJAlertDialog.BJAlertDialogItem(BJRequestCodes.REQUEST_CODE_FILE_FROM_CAMERA, context.getString(R.string.from_camera), android.R.drawable.ic_menu_camera),
-
-
                         new BJAlertDialog.BJAlertDialogItem(-1, context.getString(R.string.cancel)),//no icon for this one
                 };
                 GAD=new BJAlertDialog(context, title, R.drawable.ic_menu_gallery,
-
                         items, new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         UserSelectAction(context, items[position]);
-
                     }
                 });
-
-
                 GAD.show();
             }
-
-
         }
 
 
@@ -386,14 +367,14 @@ public class bj_image {
     public static void UpdateGallery(Context context, String ImagePath){
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File file = new File(ImagePath);
-        Uri contentUri = Uri.fromFile(file);
+        Uri contentUri = bj_file.uriUtil.uriFromFile(context,file);
         mediaScanIntent.setData(contentUri);
         context. sendBroadcast (mediaScanIntent);
     }
     public static void UpdateGallery(Context context,File Image){
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
 
-        Uri contentUri = Uri.fromFile(Image);
+        Uri contentUri = bj_file.uriUtil.uriFromFile(context,Image);
         mediaScanIntent.setData(contentUri);
        context. sendBroadcast (mediaScanIntent);
     }

@@ -29,16 +29,19 @@
                 android:layout_height="fill_parent"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentStart="true"
-
+                android:layout_alignParentEnd="true"
                 android:layout_alignParentTop="true" />
 
             <bj.modules.bj_image_objects.imagesView_TouchImageView
                 android:id="@+id/GIE_IMG_MyImage"
                 android:layout_width="300dp"
                 android:layout_height="340dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
-                android:foreground="@drawable/guides_4_4"
+
                 android:scaleType="centerCrop"
 
                 android:src="@drawable/demo"
@@ -54,7 +57,11 @@
                 android:textColor="#222"
                 android:textSize="16dp"
                 android:textStyle="bold" />
-
+                <FrameLayout
+                    android:id="@+id/GIE_FL_Crop"
+                    android:layout_width="300dp"
+                    android:layout_height="340dp"
+                    android:background="@drawable/crop_border_c_s"/>
         </RelativeLayout>
 
         <LinearLayout
